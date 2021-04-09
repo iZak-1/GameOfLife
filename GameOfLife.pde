@@ -65,14 +65,20 @@ public void draw () {
 
 public void keyPressed() {
   frameRate(20);                                                                                          //simulation controls
-  if (keyCode == 32) { //spacebar to toggle running
+  if (keyCode == 32) //spacebar to toggle running
     running = !running;
-  } else if ((keyCode == 8||keyCode == 46)&&!running) { //backspace to clear (when not running)
+  else if ((keyCode == 8||keyCode == 46)&&!running) //backspace to clear (when not running)
     eraseScreen();
-  } else if (key == ENTER&&!running&&!nextFrame) { //forward one frame when you hit enter (when notrunning)
-    running = true;
-    nextFrame = true;
+  else if (keyCode==192&&!running) {//tilde to randomize (when not running)
+    for (int i = 0; i<NUM_ROWS; i++) {
+      for (int j = 0; j<NUM_COLS; j++) {
+        buffer[i][j] = Math.random()<0.5;
+      }
+    }
+    copyFromBufferToButtons();
   }
+  else if (key == ENTER&&!running&&!nextFrame) //forward one frame when you hit enter (when notrunning)
+    running = nextFrame =true;
   //change dimensions
   else if (keyCode==38) { //up key increases number of rows and cols
     NUM_ROWS++;
@@ -131,7 +137,7 @@ else if(keyCode>=49&&keyCode<=57) { //"1-9" keys make shapes
 
 
 
-
+/**
 public void printBuffer(int r, int c) { //for finding what cells need to be true to make a shape. Not needed in the final program, but I'm keeping it here nonetheless.
   copyFromButtonsToBuffer();
   println("\n\n\n\n");
@@ -142,7 +148,8 @@ public void printBuffer(int r, int c) { //for finding what cells need to be true
       }
     }
   }
-}
+}**/
+
 public void eraseScreen() {
   for (int i = 0; i<NUM_ROWS; i++) {
     for (int j = 0; j<NUM_COLS; j++) {
@@ -221,7 +228,7 @@ public class Life {
     myCol = col; 
     x = myCol*width;
     y = myRow*height;
-    alive = Math.random() < .5; // 50/50 chance cell will be alive
+    alive = false; //Math.random() < .5; // 50/50 chance cell will be alive
     Interactive.add( this ); // register it with the manager
   }
 
