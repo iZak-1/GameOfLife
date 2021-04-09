@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 	<head>
 		<meta charset="utf-8">
-		<title>Title</title>
+		<title>Game Of Life Ceullular Automaton</title>
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="styles.css">
 		<script src="processing.js"></script>
@@ -9,20 +9,24 @@
 	</head>
 	<body>
 		<header>
-			<h1>Header</h1>
+			<h1>John Conway's Game of Life</h1>
 		</header>
 			<section id="content">
 				<canvas id="GameOfLife" data-processing-sources="GameOfLife.pde">
 				</canvas>
 		    </section>
 	    <footer>
-		    Spacebar to pause/unpase
-		    Up and down arrows to change grid size (minimum 10x10)
-		    Left and right arrows to change framerate
-		    Backspace to clear the board (while paused)
-		    Enter to go forward one generation (one frame). Only works when paused.
-		    
+		    Spacebar to pause/unpase <br>
+		    Up and down arrows to change grid size (minimum 10x10) <br>
+		    Left and right arrows to change framerate <br>
+		    Backspace to clear the board (while paused) <br>
+		    Enter to go forward one generation (one frame). Only works when paused. <br>
+		     <br>
 		    1-9 keys (not on the numpad) create different patterns. There are more patterns listed on the <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life#Examples_of_patterns">wikipedia page</a> for the game of life, as well as on the online game of life's <a href="https://playgameoflife.com/lexicon">lexicon page</a>
 	    </footer>
 	</body>
 </html>
+<!--
+v1.0: initial releast
+v1.0.1: fixed a small HTML formatting error, added backspace in addition to delete as keys to be used.
+-->
