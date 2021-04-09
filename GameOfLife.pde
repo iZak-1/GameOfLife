@@ -84,9 +84,9 @@ public void keyPressed() {
     setup();
   }
   //framerate change
-  else if (keyCode==39) { //up key increases number of rows and cols
+  else if (keyCode==39) { //rightarrow=+1fps
     framerate++;
-  } else if (keyCode==37&&framerate>1) { //down key decreases number of rows and cols (minimum 10x10)
+  } else if (keyCode==37&&framerate>1) { //downarrow=-1fps
     framerate--;
   }
   
