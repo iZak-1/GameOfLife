@@ -16,10 +16,11 @@
 				</canvas>
 		    </section>
 	    <footer>
-		    Spacebar to pause/unpase <br>
-		    Up and down arrows to change grid size (minimum 10x10) <br>
-		    Left and right arrows to change framerate <br>
-		    Backspace to clear the board (while paused) <br>
+		    Spacebar: pause/unpase <br>
+		    Up and down arrows: change grid size, minimum 10x10 (up=increase size, down=decrease) <br>
+		    Left and right arrows: change framerate (right=higher, left=lower)<br>
+		    Backspace or delete: clear the grid (while paused) <br>
+		    Tilde (~, but without the shift, so actually a backquote `): randomize the state of the grid
 		    Enter to go forward one generation (one frame). Only works when paused. <br>
 		     <br>
 		    1-9 keys (not on the numpad) create different patterns. There are more patterns listed on the <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life#Examples_of_patterns">wikipedia page</a> for the game of life, as well as on the online game of life's <a href="https://playgameoflife.com/lexicon">lexicon page</a>
@@ -28,6 +29,7 @@
 </html>
 <!--
 v1.0: initial releast
-v1.0.1: fixed a small HTML formatting error, added backspace in addition to delete as keys to be used.
+v1.0.1: fixed a small HTML formatting error, added delete in addition to backspace as keys to clear board.
 v1.02 and 1.03: switched to 1000x1000, and then back to 800x800 when I realized 1000x1000 is too big.
+v1.1: added the ability to randomize the board.
 -->
