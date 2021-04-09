@@ -11,7 +11,7 @@ int framerate = 6;
 
 
 public void setup () {
-  size(1000, 1000);
+  size(800, 800);
   frameRate(framerate);
   textAlign(CENTER,CENTER); 
   // make the manager
@@ -215,8 +215,8 @@ public class Life {
   private boolean alive;
 
   public Life (int row, int col) {
-    width = 1000/NUM_COLS;
-    height = 1000/NUM_ROWS;
+    width = 800/NUM_COLS;
+    height = 800/NUM_ROWS;
     myRow = row;
     myCol = col; 
     x = myCol*width;
@@ -231,7 +231,7 @@ public class Life {
   }
   public void show () {    
     fill(alive ? 200 : 100);
-    rect(x+0.5*(1000%NUM_COLS), y+0.5*(1000%NUM_ROWS), width, height);
+    rect(x+0.5*(800%NUM_COLS), y+0.5*(800%NUM_ROWS), width, height);
   }
   public boolean getLife() {
     return alive;
