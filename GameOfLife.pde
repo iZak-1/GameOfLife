@@ -15,7 +15,7 @@ public void setup () {
   size(800, 400); //size((int)(0.95*window.innerWidth), (int)(0.95*window.innerHeight)); 
   frameRate(framerate);
   CELL_SIZE=(float)width/NUM_COLS;
-  NUM_ROWS=(int)(height/CELL_SIZE);
+  NUM_ROWS=(int)floor(height/CELL_SIZE);
   
   // make the manager
   Interactive.make( this );
@@ -105,31 +105,31 @@ public void keyPressed() {
       eraseScreen();
     switch(keyCode) {
       case 49:
-        makeBlinker((NUM_ROWS/2),(NUM_COLS/2));
+        makeBlinker(floor(NUM_ROWS/2),floor(NUM_COLS/2));
         break;
       case 50:
-        makeToad((NUM_ROWS/2),(NUM_COLS/2));
+        makeToad(floor(NUM_ROWS/2),floor(NUM_COLS/2));
         break;
       case 51:
-        makeBeacon((NUM_ROWS/2),(NUM_COLS/2));
+        makeBeacon(floor(NUM_ROWS/2),floor(NUM_COLS/2));
         break;
       case 52:
-        makePulsar((NUM_ROWS/2),(NUM_COLS/2));
+        makePulsar(floor(NUM_ROWS/2),floor(NUM_COLS/2));
         break;
       case 53:
-        makePentadecathlon((NUM_ROWS/2),(NUM_COLS/2));
+        makePentadecathlon(floor(NUM_ROWS/2),floor(NUM_COLS/2));
         break;
       case 54:
         makeGlider(1,1);
         break;
       case 55:
-        makeLightWeightShip((NUM_ROWS/2),1);
+        makeLightWeightShip(floor(NUM_ROWS/2),1);
         break;
       case 56:
-        makeMedWeightShip((NUM_ROWS/2),1);
+        makeMedWeightShip(floor(NUM_ROWS/2),1);
         break;
       case 57:
-        makeHeavyWeightShip((NUM_ROWS/2),1);
+        makeHeavyWeightShip(floor(NUM_ROWS/2),1);
         break;
     }
     copyFromBufferToButtons();
@@ -203,35 +203,3 @@ public void makeMedWeightShip(int r, int c) {  buffer[r-1][c+1]=buffer[r-1][c+2]
 public void makeHeavyWeightShip(int r, int c) {  buffer[r-1][c+1]=buffer[r-1][c+2]=buffer[r-1][c+3]=buffer[r-1][c+4]=buffer[r-1][c+5]=buffer[r-1][c+6]=buffer[r][c]=buffer[r][c+6]=buffer[r+1][c+6]=buffer[r+2][c]=buffer[r+2][c+5]=buffer[r+3][c+2]=buffer[r+3][c+3]=true;  }
 
 //see https://playgameoflife.com/lexicon for more possibilities
-
-public class Life {
-  private int myRow, myCol;
-  private float x, y, width, height;
-  private boolean alive;
-
-  public Life (int row, int col) {
-    width = CELL_SIZE;
-    height = CELL_SIZE;
-    myRow = row;
-    myCol = col; 
-    x = myCol*width;
-    y = myRow*height;
-    alive = false; //Math.random() < .5; // 50/50 chance cell will be alive
-    Interactive.add( this ); // register it with the manager
-  }
-
-  // called by manager
-  public void mousePressed () {
-    alive = !alive; //turn cell on and off with mouse press
-  }
-  public void show() {
-    fill(alive ? 200 : 100);
-    rect(x, y, width, height);
-  }
-  public boolean getLife() {
-    return alive;
-  }
-  public void setLife(boolean living) {
-    alive = living;
-  }
-}
