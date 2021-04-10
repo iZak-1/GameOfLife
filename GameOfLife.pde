@@ -1,7 +1,7 @@
 import de.bezier.guido.*;
 //Declare and initialize constants NUM_ROWS and NUM_COLS = 20 //
 int NUM_ROWS;
-int NUM_COLS=20;
+int NUM_COLS=38;
 float CELL_SIZE;
 private Life[][] buttons; //2d array of Life buttons each representing one cell
 private boolean[][] buffer; //2d array of booleans to store state of buttons array
@@ -10,7 +10,7 @@ public boolean nextFrame = false;
 int framerate = 6;
 
 public void setup () {
-  size((int)(0.95*window.innerWidth), (int)(0.95*window.innerHeight)); //size(800, 400);
+  size(1140, 330); //size((int)(0.95*window.innerWidth), (int)(0.95*window.innerHeight));
   frameRate(framerate);
   CELL_SIZE=(float)width/NUM_COLS;
   NUM_ROWS=(int)floor(height/CELL_SIZE);
@@ -88,7 +88,7 @@ public void keyPressed() {
   } else if (keyCode==37&&framerate>1) { //downarrow=-1fps
     framerate--;
   }
-else if(keyCode>=49&&keyCode<=57) { //"1-9" keys make shapes
+else if(keyCode>=48&&keyCode<=57) { //"1-9" keys make shapes
     setup();
     eraseScreen();
     switch(keyCode) {
@@ -111,19 +111,37 @@ else if(keyCode>=49&&keyCode<=57) { //"1-9" keys make shapes
         makeGlider(1,1);
         break;
       case 55:
-        makeLightWeightShip(floor((NUM_ROWS/2)),1);
+        makeLightWeightShip(floor(NUM_ROWS/2),1);
         break;
       case 56:
-        makeMedWeightShip(floor((NUM_ROWS/2)),1);
+        makeMedWeightShip(floor(NUM_ROWS/2),1);
         break;
       case 57:
-        makeHeavyWeightShip(floor((NUM_ROWS/2)),1);
+        makeHeavyWeightShip(floor(NUM_ROWS/2),1);
         break;
+      case 48:
+        makeGosperGun(1,1);
     }
     copyFromBufferToButtons();
   }
+  //else if(keyCode == 80) printBuffer(1,1);
   if(running&&!nextFrame) frameRate(framerate);
 }
+
+/**
+public void printBuffer(int r, int c) { //for finding what cells need to be true to make a shape. Not needed in the final program, but I'm keeping it here nonetheless.
+  copyFromButtonsToBuffer();
+  println("\n\n\n\n");
+  for (int i = 0; i<NUM_ROWS; i++) {
+    for (int j = 0; j<NUM_COLS; j++) {
+      if(buffer[i][j]) {
+        print("buffer[r+"+(i-r)+"][c+"+(j-c)+"]=");
+      }
+    }
+  }
+}
+**/
+
 public void eraseScreen() {
   for (int i = 0; i<NUM_ROWS; i++) {
     for (int j = 0; j<NUM_COLS; j++) {
@@ -180,6 +198,7 @@ public void makeGlider(int r, int c) {  buffer[r][c]=buffer[r+1][c+1]=buffer[r+1
 public void makeLightWeightShip(int r, int c) {  buffer[r-1][c+1]=buffer[r-1][c+2]=buffer[r-1][c+3]=buffer[r-1][c+4]=buffer[r][c]=buffer[r][c+4]=buffer[r+1][c+4]=buffer[r+2][c]=buffer[r+2][c+3]=true;  }
 public void makeMedWeightShip(int r, int c) {  buffer[r-1][c+1]=buffer[r-1][c+2]=buffer[r-1][c+3]=buffer[r-1][c+4]=buffer[r-1][c+5]=buffer[r][c]=buffer[r][c+5]=buffer[r+1][c+5]=buffer[r+2][c]=buffer[r+2][c+4]=buffer[r+3][c+2]=true;  }
 public void makeHeavyWeightShip(int r, int c) {  buffer[r-1][c+1]=buffer[r-1][c+2]=buffer[r-1][c+3]=buffer[r-1][c+4]=buffer[r-1][c+5]=buffer[r-1][c+6]=buffer[r][c]=buffer[r][c+6]=buffer[r+1][c+6]=buffer[r+2][c]=buffer[r+2][c+5]=buffer[r+3][c+2]=buffer[r+3][c+3]=true;  }
+public void makeGosperGun(int r, int c) {  buffer[r+0][c+24]=buffer[r+1][c+22]=buffer[r+1][c+24]=buffer[r+2][c+12]=buffer[r+2][c+13]=buffer[r+2][c+20]=buffer[r+2][c+21]=buffer[r+2][c+34]=buffer[r+2][c+35]=buffer[r+3][c+11]=buffer[r+3][c+15]=buffer[r+3][c+20]=buffer[r+3][c+21]=buffer[r+3][c+34]=buffer[r+3][c+35]=buffer[r+4][c+0]=buffer[r+4][c+1]=buffer[r+4][c+10]=buffer[r+4][c+16]=buffer[r+4][c+20]=buffer[r+4][c+21]=buffer[r+5][c+0]=buffer[r+5][c+1]=buffer[r+5][c+10]=buffer[r+5][c+14]=buffer[r+5][c+16]=buffer[r+5][c+17]=buffer[r+5][c+22]=buffer[r+5][c+24]=buffer[r+6][c+10]=buffer[r+6][c+16]=buffer[r+6][c+24]=buffer[r+7][c+11]=buffer[r+7][c+15]=buffer[r+8][c+12]=buffer[r+8][c+13]=true;  }
 //see https://playgameoflife.com/lexicon for more possibilities
 
 
@@ -212,15 +231,3 @@ public class Life {
     alive = living;
   }
 }
-
-
-/**
-fill(255);
-  textSize(height/30);
-  textAlign(CENTER,BOTTOM);
-  text(framerate+" fps                 "+NUM_COLS+"x"+NUM_ROWS,width/2,49*height/50);
-  if(!running) {
-    textAlign(CENTER,TOP);
-    text("paused",width/2,height/50);
-  }
-  **/
