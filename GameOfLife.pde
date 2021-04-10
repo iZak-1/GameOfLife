@@ -1,7 +1,7 @@
 import de.bezier.guido.*;
 //Declare and initialize constants NUM_ROWS and NUM_COLS = 20 //
 int NUM_ROWS;
-int NUM_COLS=38;
+int NUM_COLS=20;
 float CELL_SIZE;
 private Life[][] buttons; //2d array of Life buttons each representing one cell
 private boolean[][] buffer; //2d array of booleans to store state of buttons array
@@ -10,7 +10,7 @@ public boolean nextFrame = false;
 int framerate = 6;
 
 public void setup () {
-  size(1140, 330); //size((int)(0.95*window.innerWidth), (int)(0.95*window.innerHeight));
+  size((int)(0.95*window.innerWidth), (int)(0.95*window.innerHeight)); //size(1000, 600);
   frameRate(framerate);
   CELL_SIZE=(float)width/NUM_COLS;
   NUM_ROWS=(int)floor(height/CELL_SIZE);
