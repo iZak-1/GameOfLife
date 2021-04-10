@@ -12,7 +12,7 @@ int framerate = 5;
 
 
 public void setup () {
-  size(800, 400);
+  size((int)(0.95*window.innerWidth), (int)(0.95*window.innerHeight)); 
   frameRate(framerate);
   CELL_SIZE=(float)width/NUM_COLS;
   NUM_ROWS=(int)(height/CELL_SIZE);
@@ -67,7 +67,7 @@ public void keyPressed() {
   frameRate(20);                                                                                          //simulation controls
   if (keyCode == 32) //spacebar to toggle running
     running = !running;
-  else if ((keyCode == 8||keyCode == 46||keyCode==220||keyCode==27)&&!running) //backspace to clear (when not running)
+  else if ((keyCode == 8||keyCode == 46||keyCode==220||keyCode==27)&&!running) //backspace, esc, del, or backspace clear (when not running)
     eraseScreen();
   else if (keyCode==192&&!running) {//tilde to randomize (when not running)
     for (int i = 0; i<NUM_ROWS; i++) {
@@ -197,3 +197,34 @@ public void makeMedWeightShip(int r, int c) {  buffer[r-1][c+1]=buffer[r-1][c+2]
 public void makeHeavyWeightShip(int r, int c) {  buffer[r-1][c+1]=buffer[r-1][c+2]=buffer[r-1][c+3]=buffer[r-1][c+4]=buffer[r-1][c+5]=buffer[r-1][c+6]=buffer[r][c]=buffer[r][c+6]=buffer[r+1][c+6]=buffer[r+2][c]=buffer[r+2][c+5]=buffer[r+3][c+2]=buffer[r+3][c+3]=true;  }
 
 //see https://playgameoflife.com/lexicon for more possibilities
+public class Life {
+  private int myRow, myCol;
+  private float x, y, width, height;
+  private boolean alive;
+
+  public Life (int row, int col) {
+    width = CELL_SIZE;
+    height = CELL_SIZE;
+    myRow = row;
+    myCol = col; 
+    x = myCol*width;
+    y = myRow*height;
+    alive = false; //Math.random() < .5; // 50/50 chance cell will be alive
+    Interactive.add( this ); // register it with the manager
+  }
+
+  // called by manager
+  public void mousePressed () {
+    alive = !alive; //turn cell on and off with mouse press
+  }
+  public void show () {    
+    fill(alive ? 200 : 100);
+    rect(x, y, width, height);
+  }
+  public boolean getLife() {
+    return alive;
+  }
+  public void setLife(boolean living) {
+    alive = living;
+  }
+}
