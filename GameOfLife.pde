@@ -84,11 +84,11 @@ public void keyPressed() {
   else if (key == ENTER&&!running&&!nextFrame) //forward one frame when you hit enter (when notrunning)
     running = nextFrame =true;
   //change dimensions
-  else if (keyCode==38) { //up key increases number of rows and cols
+  else if (keyCode==38&&!running&&!nextFrame) { //up key increases number of rows and cols
     delay(10);
     NUM_COLS++;
     setup();
-  } else if (keyCode==40&&NUM_ROWS>10) { //down key decreases number of rows and cols (minimum 10x10)
+  } else if (keyCode==40&&NUM_COLS>5&&!running&&!nextFrame) { //down key decreases number of rows and cols (minimum 10x10)
     delay(10);
     NUM_COLS--;
     setup();
@@ -203,35 +203,3 @@ public void makeMedWeightShip(int r, int c) {  buffer[r-1][c+1]=buffer[r-1][c+2]
 public void makeHeavyWeightShip(int r, int c) {  buffer[r-1][c+1]=buffer[r-1][c+2]=buffer[r-1][c+3]=buffer[r-1][c+4]=buffer[r-1][c+5]=buffer[r-1][c+6]=buffer[r][c]=buffer[r][c+6]=buffer[r+1][c+6]=buffer[r+2][c]=buffer[r+2][c+5]=buffer[r+3][c+2]=buffer[r+3][c+3]=true;  }
 
 //see https://playgameoflife.com/lexicon for more possibilities
-
-public class Life {
-  private int myRow, myCol;
-  private float x, y, width, height;
-  private boolean alive;
-
-  public Life (int row, int col) {
-    width = CELL_SIZE;
-    height = CELL_SIZE;
-    myRow = row;
-    myCol = col; 
-    x = myCol*width;
-    y = myRow*height;
-    alive = false; //Math.random() < .5; // 50/50 chance cell will be alive
-    Interactive.add( this ); // register it with the manager
-  }
-
-  // called by manager
-  public void mousePressed () {
-    alive = !alive; //turn cell on and off with mouse press
-  }
-  public void show() {
-    fill(alive ? 200 : 100);
-    rect(x, y, width, height);
-  }
-  public boolean getLife() {
-    return alive;
-  }
-  public void setLife(boolean living) {
-    alive = living;
-  }
-}
