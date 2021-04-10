@@ -10,6 +10,7 @@ public boolean nextFrame = false;
 int framerate = 6;
 
 public void setup () {
+  createP=framerate;
   size(800, 400);
   frameRate(framerate);
   CELL_SIZE=(float)width/NUM_COLS;
@@ -41,6 +42,14 @@ public void draw () {
       }
       buttons[i][j].show();
     }
+  }
+  fill(255);
+  textSize(floor(height/30));
+  textAlign(CENTER,BOTTOM);
+  text(framerate+" fps                 "+NUM_COLS+"x"+NUM_ROWS,floor(width/2),floor(49*height/50));
+  if(!running) {
+    textAlign(CENTER,TOP);
+    text("paused",floor(width/2),floor(height/50));
   }
   copyFromButtonsToBuffer();
   
@@ -204,3 +213,15 @@ public class Life {
     alive = living;
   }
 }
+
+
+/**
+fill(255);
+  textSize(height/30);
+  textAlign(CENTER,BOTTOM);
+  text(framerate+" fps                 "+NUM_COLS+"x"+NUM_ROWS,width/2,49*height/50);
+  if(!running) {
+    textAlign(CENTER,TOP);
+    text("paused",width/2,height/50);
+  }
+  **/
