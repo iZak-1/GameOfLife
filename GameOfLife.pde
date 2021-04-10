@@ -12,7 +12,7 @@ int framerate = 5;
 
 
 public void setup () {
-  size(800, 400); //size((int)(0.95*window.innerWidth), (int)(0.95*window.innerHeight)); 
+  size((int)(0.95*window.innerWidth), (int)(0.95*window.innerHeight)); //size(800, 400);
   frameRate(framerate);
   CELL_SIZE=(float)width/NUM_COLS;
   NUM_ROWS=(int)floor(height/CELL_SIZE);
