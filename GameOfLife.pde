@@ -1,19 +1,22 @@
 import de.bezier.guido.*;
 //Declare and initialize constants NUM_ROWS and NUM_COLS = 20
-int NUM_ROWS=20;
+int NUM_ROWS;
 int NUM_COLS=20;
+float CELL_SIZE;
 private Life[][] buttons; //2d array of Life buttons each representing one cell
 private boolean[][] buffer; //2d array of booleans to store state of buttons array
 private boolean running; //used to start and stop program
 public boolean nextFrame = false;
-int framerate = 6;
+int framerate = 5;
 
 
 
 public void setup () {
-  size(800, 800);
+  size(800, 400); //size((int)(0.95*window.innerWidth), (int)(0.95*window.innerHeight)); 
   frameRate(framerate);
-  textAlign(CENTER,CENTER); 
+  CELL_SIZE=(float)width/NUM_COLS;
+  NUM_ROWS=(int)floor(height/CELL_SIZE);
+  
   // make the manager
   Interactive.make( this );
   running = false;
@@ -33,7 +36,7 @@ public void setup () {
 
 
 
-public void draw () {
+public void show () {
   background( 0 );
   if(running)copyFromBufferToButtons();
 
@@ -41,18 +44,18 @@ public void draw () {
     for (int j = 0; j<NUM_COLS; j++) {
       if (running) {
         buttons[i][j].setLife(countNeighbors(i, j)==3||(countNeighbors(i, j)==2&&buttons[i][j].getLife()));
+        buttons[i][j].show();
       }      
       
-      buttons[i][j].show();
       
-      //text
-      fill(255);
-      textSize(height/50);
-      text(framerate+" fps",width/2,19*height/20);
-      if(!running) text("paused",width/2,height/20);
     }
   }
-
+  if(!running) {
+    fill(255);
+    textSize(width/50);
+    text(framerate+" fps",width/2,19*height/20);
+    text("paused",width/2,height/20);
+  }
   copyFromButtonsToBuffer();
   
   if (nextFrame) {
@@ -67,7 +70,7 @@ public void keyPressed() {
   frameRate(20);                                                                                          //simulation controls
   if (keyCode == 32) //spacebar to toggle running
     running = !running;
-  else if ((keyCode == 8||keyCode == 46)&&!running) //backspace to clear (when not running)
+  else if (keyCode==220&&!running) //backslash to clear (when not running)
     eraseScreen();
   else if (keyCode==192&&!running) {//tilde to randomize (when not running)
     for (int i = 0; i<NUM_ROWS; i++) {
@@ -81,11 +84,9 @@ public void keyPressed() {
     running = nextFrame =true;
   //change dimensions
   else if (keyCode==38) { //up key increases number of rows and cols
-    NUM_ROWS++;
     NUM_COLS++;
     setup();
   } else if (keyCode==40&&NUM_ROWS>10) { //down key decreases number of rows and cols (minimum 10x10)
-    NUM_ROWS--;
     NUM_COLS--;
     setup();
   }
@@ -96,36 +97,36 @@ public void keyPressed() {
     framerate--;
   }
   
-else if(keyCode>=49&&keyCode<=57) { //"1-9" keys make shapes
-    setup();
-    eraseScreen();
+  else if(keyCode>=49&&keyCode<=57) { //"1-9" keys make shapes
+      setup();
+      eraseScreen();
     switch(keyCode) {
       case 49:
-        makeBlinker((NUM_ROWS/2),(NUM_COLS/2));
+        makeBlinker(floor(NUM_ROWS/2),floor(NUM_COLS/2));
         break;
       case 50:
-        makeToad((NUM_ROWS/2),(NUM_COLS/2));
+        makeToad(floor(NUM_ROWS/2),floor(NUM_COLS/2));
         break;
       case 51:
-        makeBeacon((NUM_ROWS/2),(NUM_COLS/2));
+        makeBeacon(floor(NUM_ROWS/2),floor(NUM_COLS/2));
         break;
       case 52:
-        makePulsar((NUM_ROWS/2),(NUM_COLS/2));
+        makePulsar(floor(NUM_ROWS/2),floor(NUM_COLS/2));
         break;
       case 53:
-        makePentadecathlon((NUM_ROWS/2),(NUM_COLS/2));
+        makePentadecathlon(floor(NUM_ROWS/2),floor(NUM_COLS/2));
         break;
       case 54:
         makeGlider(1,1);
         break;
       case 55:
-        makeLightWeightShip((NUM_ROWS/2),1);
+        makeLightWeightShip(floor(NUM_ROWS/2),1);
         break;
       case 56:
-        makeMedWeightShip((NUM_ROWS/2),1);
+        makeMedWeightShip(floor(NUM_ROWS/2),1);
         break;
       case 57:
-        makeHeavyWeightShip((NUM_ROWS/2),1);
+        makeHeavyWeightShip(floor(NUM_ROWS/2),1);
         break;
     }
     copyFromBufferToButtons();
@@ -133,22 +134,6 @@ else if(keyCode>=49&&keyCode<=57) { //"1-9" keys make shapes
   
   if(running&&!nextFrame) frameRate(framerate);
 }
-
-
-
-
-/**
-public void printBuffer(int r, int c) { //for finding what cells need to be true to make a shape. Not needed in the final program, but I'm keeping it here nonetheless.
-  copyFromButtonsToBuffer();
-  println("\n\n\n\n");
-  for (int i = 0; i<NUM_ROWS; i++) {
-    for (int j = 0; j<NUM_COLS; j++) {
-      if(buffer[i][j]) {
-        print("buffer[r+"+(i-r)+"][c+"+(j-c)+"]=");
-      }
-    }
-  }
-}**/
 
 public void eraseScreen() {
   for (int i = 0; i<NUM_ROWS; i++) {
@@ -222,13 +207,13 @@ public class Life {
   private boolean alive;
 
   public Life (int row, int col) {
-    width = 800/NUM_COLS;
-    height = 800/NUM_ROWS;
+    width = CELL_SIZE;
+    height = CELL_SIZE;
     myRow = row;
     myCol = col; 
     x = myCol*width;
     y = myRow*height;
-    alive = false; //Math.random() < .5; // 50/50 chance cell will be alive
+    alive = false;
     Interactive.add( this ); // register it with the manager
   }
 
@@ -236,9 +221,9 @@ public class Life {
   public void mousePressed () {
     alive = !alive; //turn cell on and off with mouse press
   }
-  public void show () {    
+  public void show () {
     fill(alive ? 200 : 100);
-    rect(x+0.5*(800%NUM_COLS), y+0.5*(800%NUM_ROWS), width, height);
+    rect(x, y, width, height);
   }
   public boolean getLife() {
     return alive;
