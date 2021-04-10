@@ -15,7 +15,7 @@ public void setup () {
   size(800, 400); //size((int)(0.95*window.innerWidth), (int)(0.95*window.innerHeight)); 
   frameRate(framerate);
   CELL_SIZE=(float)width/NUM_COLS;
-  NUM_ROWS=(int)floor(height/CELL_SIZE);
+  NUM_ROWS=(int)(height/CELL_SIZE);
   
   // make the manager
   Interactive.make( this );
@@ -36,7 +36,7 @@ public void setup () {
 
 
 
-public void show () {
+public void draw () {
   background( 0 );
   if(running)copyFromBufferToButtons();
 
@@ -44,17 +44,18 @@ public void show () {
     for (int j = 0; j<NUM_COLS; j++) {
       if (running) {
         buttons[i][j].setLife(countNeighbors(i, j)==3||(countNeighbors(i, j)==2&&buttons[i][j].getLife()));
-        buttons[i][j].show();
       }      
-      
+      buttons[i][j].show();
       
     }
   }
+  fill(255);
+  textSize(height/30);
+  textAlign(CENTER,BOTTOM);
+  text(framerate+" fps                 "+NUM_COLS+"x"+NUM_ROWS,width/2,49*height/50);
   if(!running) {
-    fill(255);
-    textSize(width/50);
-    text(framerate+" fps",width/2,19*height/20);
-    text("paused",width/2,height/20);
+    textAlign(CENTER,TOP);
+    text("paused",width/2,height/50);
   }
   copyFromButtonsToBuffer();
   
@@ -84,9 +85,11 @@ public void keyPressed() {
     running = nextFrame =true;
   //change dimensions
   else if (keyCode==38) { //up key increases number of rows and cols
+    delay(10);
     NUM_COLS++;
     setup();
   } else if (keyCode==40&&NUM_ROWS>10) { //down key decreases number of rows and cols (minimum 10x10)
+    delay(10);
     NUM_COLS--;
     setup();
   }
@@ -102,31 +105,31 @@ public void keyPressed() {
       eraseScreen();
     switch(keyCode) {
       case 49:
-        makeBlinker(floor(NUM_ROWS/2),floor(NUM_COLS/2));
+        makeBlinker((NUM_ROWS/2),(NUM_COLS/2));
         break;
       case 50:
-        makeToad(floor(NUM_ROWS/2),floor(NUM_COLS/2));
+        makeToad((NUM_ROWS/2),(NUM_COLS/2));
         break;
       case 51:
-        makeBeacon(floor(NUM_ROWS/2),floor(NUM_COLS/2));
+        makeBeacon((NUM_ROWS/2),(NUM_COLS/2));
         break;
       case 52:
-        makePulsar(floor(NUM_ROWS/2),floor(NUM_COLS/2));
+        makePulsar((NUM_ROWS/2),(NUM_COLS/2));
         break;
       case 53:
-        makePentadecathlon(floor(NUM_ROWS/2),floor(NUM_COLS/2));
+        makePentadecathlon((NUM_ROWS/2),(NUM_COLS/2));
         break;
       case 54:
         makeGlider(1,1);
         break;
       case 55:
-        makeLightWeightShip(floor(NUM_ROWS/2),1);
+        makeLightWeightShip((NUM_ROWS/2),1);
         break;
       case 56:
-        makeMedWeightShip(floor(NUM_ROWS/2),1);
+        makeMedWeightShip((NUM_ROWS/2),1);
         break;
       case 57:
-        makeHeavyWeightShip(floor(NUM_ROWS/2),1);
+        makeHeavyWeightShip((NUM_ROWS/2),1);
         break;
     }
     copyFromBufferToButtons();
@@ -213,7 +216,7 @@ public class Life {
     myCol = col; 
     x = myCol*width;
     y = myRow*height;
-    alive = false;
+    alive = false; //Math.random() < .5; // 50/50 chance cell will be alive
     Interactive.add( this ); // register it with the manager
   }
 
@@ -221,7 +224,7 @@ public class Life {
   public void mousePressed () {
     alive = !alive; //turn cell on and off with mouse press
   }
-  public void show () {
+  public void show() {
     fill(alive ? 200 : 100);
     rect(x, y, width, height);
   }
