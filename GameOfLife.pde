@@ -1,15 +1,19 @@
 import de.bezier.guido.*;
 //Declare and initialize constants NUM_ROWS and NUM_COLS = 20 //
-int NUM_ROWS=20;
+int NUM_ROWS;
 int NUM_COLS=20;
+float CELL_SIZE;
 private Life[][] buttons; //2d array of Life buttons each representing one cell
 private boolean[][] buffer; //2d array of booleans to store state of buttons array
 private boolean running; //used to start and stop program
 public boolean nextFrame = false;
 int framerate = 6;
+
 public void setup () {
-  size(800, 800);
+  size(800, 400);
   frameRate(framerate);
+  CELL_SIZE=(float)width/NUM_COLS;
+  NUM_ROWS=(int)floor(height/CELL_SIZE);
   textAlign(CENTER,CENTER);
   // make the manager
   Interactive.make( this );
@@ -36,14 +40,10 @@ public void draw () {
         buttons[i][j].setLife(countNeighbors(i, j)==3||(countNeighbors(i, j)==2&&buttons[i][j].getLife()));
       }
       buttons[i][j].show();
-      //text
-      fill(255);
-      textSize(floor(height/50));
-      text(framerate+" fps",floor(width/2),19*floor(height/20));
-      if(!running) text("paused",floor(width/2),floor(height/20));
     }
   }
   copyFromButtonsToBuffer();
+  
   if (nextFrame) {
     nextFrame = false;
     running = false;
@@ -53,7 +53,7 @@ public void keyPressed() {
   frameRate(20);                                                                                          //simulation controls
   if (keyCode == 32) //spacebar to toggle running
     running = !running;
-  else if ((keyCode == 8||keyCode == 46)&&!running) //backspace to clear (when not running)
+  else if (keyCode == 220&&!running) //backslash to clear (when not running)
     eraseScreen();
   else if (keyCode==192&&!running) {//tilde to randomize (when not running)
     for (int i = 0; i<NUM_ROWS; i++) {
@@ -66,15 +66,14 @@ public void keyPressed() {
   else if (key == ENTER&&!running&&!nextFrame) //forward one frame when you hit enter (when notrunning)
     running = nextFrame =true;
   //change dimensions
-  else if (keyCode==38) { //up key increases number of rows and cols
-    NUM_ROWS++;
+  else if (keyCode==38&&!running&&!nextFrame) { //up key increases number of rows and cols
     NUM_COLS++;
     setup();
-  } else if (keyCode==40&&NUM_ROWS>10) { //down key decreases number of rows and cols (minimum 10x10)
-    NUM_ROWS--;
+  } else if (keyCode==40&&NUM_COLS>5&&NUM_ROWS>1&&!running&&!nextFrame) { //down key decreases number of rows and cols (minimum 10x10)
     NUM_COLS--;
     setup();
   }
+  
   //framerate change
   else if (keyCode==39) { //rightarrow=+1fps
     framerate++;
@@ -117,18 +116,6 @@ else if(keyCode>=49&&keyCode<=57) { //"1-9" keys make shapes
   }
   if(running&&!nextFrame) frameRate(framerate);
 }
-/**
-public void printBuffer(int r, int c) { //for finding what cells need to be true to make a shape. Not needed in the final program, but I'm keeping it here nonetheless.
-  copyFromButtonsToBuffer();
-  println("\n\n\n\n");
-  for (int i = 0; i<NUM_ROWS; i++) {
-    for (int j = 0; j<NUM_COLS; j++) {
-      if(buffer[i][j]) {
-        print("buffer[r+"+(i-r)+"][c+"+(j-c)+"]=");
-      }
-    }
-  }
-}**/
 public void eraseScreen() {
   for (int i = 0; i<NUM_ROWS; i++) {
     for (int j = 0; j<NUM_COLS; j++) {
@@ -186,13 +173,15 @@ public void makeLightWeightShip(int r, int c) {  buffer[r-1][c+1]=buffer[r-1][c+
 public void makeMedWeightShip(int r, int c) {  buffer[r-1][c+1]=buffer[r-1][c+2]=buffer[r-1][c+3]=buffer[r-1][c+4]=buffer[r-1][c+5]=buffer[r][c]=buffer[r][c+5]=buffer[r+1][c+5]=buffer[r+2][c]=buffer[r+2][c+4]=buffer[r+3][c+2]=true;  }
 public void makeHeavyWeightShip(int r, int c) {  buffer[r-1][c+1]=buffer[r-1][c+2]=buffer[r-1][c+3]=buffer[r-1][c+4]=buffer[r-1][c+5]=buffer[r-1][c+6]=buffer[r][c]=buffer[r][c+6]=buffer[r+1][c+6]=buffer[r+2][c]=buffer[r+2][c+5]=buffer[r+3][c+2]=buffer[r+3][c+3]=true;  }
 //see https://playgameoflife.com/lexicon for more possibilities
+
+
 public class Life {
   private int myRow, myCol;
   private float x, y, width, height;
   private boolean alive;
   public Life (int row, int col) {
-    width = floor(800/NUM_COLS);
-    height = floor(800/NUM_ROWS);
+    width = CELL_SIZE;
+    height = CELL_SIZE;
     myRow = row;
     myCol = col;
     x = myCol*width;
@@ -206,7 +195,7 @@ public class Life {
   }
   public void show () {
     fill(alive ? 200 : 100);
-    rect(x+0.5*(800%NUM_COLS), y+0.5*(800%NUM_ROWS), width, height);
+    rect(x, y, width, height);
   }
   public boolean getLife() {
     return alive;
