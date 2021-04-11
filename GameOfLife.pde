@@ -139,7 +139,7 @@ public void keyPressed() {
   } else if (keyCode==37&&framerate>1) { //downarrow=-1fps
     framerate--;
   }
-else if(keyCode>=48&&keyCode<=57) { //"1-9" keys make shapes
+else if(keyCode>=48&&keyCode<=57&&!running) { //"1-9" keys make shapes
     setup();
     switch(keyCode) {
       case 49:
