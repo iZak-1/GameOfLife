@@ -5,15 +5,21 @@ int NUM_COLS=20;
 float CELL_SIZE;
 private Life[][] buttons; //2d array of Life buttons each representing one cell
 private boolean[][] buffer; //2d array of booleans to store state of buttons array
+private boolean[][] oldBuffer;
 private boolean running; //used to start and stop program
 public boolean nextFrame = false;
-int framerate = 6;
+public int framerate = 6;
+public int genCount;
+public boolean isDead;
+public boolean isStable;
 
 public void setup () {
-  size((int)(0.95*window.innerWidth), (int)(0.95*window.innerHeight)); //size(1000, 600);
+  size(1000, 600); //size((int)(0.95*window.innerWidth), (int)(0.95*window.innerHeight));
   frameRate(framerate);
   CELL_SIZE=(float)width/NUM_COLS;
   NUM_ROWS=(int)floor(height/CELL_SIZE);
+  genCount = 0;
+  isDead = isStable = false;
   textAlign(CENTER,CENTER);
   // make the manager
   Interactive.make( this );
@@ -30,10 +36,15 @@ public void setup () {
       buffer[i][j] = new Boolean(buttons[i][j].getLife());
     }
   }
+  oldBuffer=new boolean[NUM_ROWS][NUM_COLS];
+  copyToOldBuffer();
 }
 public void draw () {
   background( 0 );
-  if(running)copyFromBufferToButtons();
+  if(running) {
+    copyFromBufferToButtons();
+    genCount++;
+  }
   for (int i = 0; i<NUM_ROWS; i++) {
     for (int j = 0; j<NUM_COLS; j++) {
       if (running) {
@@ -42,15 +53,38 @@ public void draw () {
       buttons[i][j].show();
     }
   }
+  copyFromButtonsToBuffer();
+  
+  if(checkIfDead()&&genCount>0) {
+    running = false;
+    isDead = true;
+  }
+  
+  if(running&&checkIfSame()) {
+    running = false;
+    isStable = true;
+    genCount--;
+  }
+  copyToOldBuffer();
+  
+  
   fill(255);
   textSize(floor(height/30));
   textAlign(CENTER,BOTTOM);
-  text(framerate+" fps                 "+NUM_COLS+"x"+NUM_ROWS,floor(width/2),floor(49*height/50));
+  text(framerate+" fps",floor(width/2),floor(49*height/50));
+  textAlign(RIGHT,BOTTOM);
+  text(genCount, floor(49*width/50), floor(49*height/50));
   if(!running) {
     textAlign(CENTER,TOP);
     text("paused",floor(width/2),floor(height/50));
+    textAlign(LEFT,BOTTOM);
+    text(NUM_COLS+"x"+NUM_ROWS,floor(width/50),floor(49*height/50));
   }
-  copyFromButtonsToBuffer();
+  if(isStable||isDead) {
+    textAlign(CENTER,CENTER);
+    if(isStable) text("fully stable after "+genCount+" generations and onwards.\nReset or modify the grid to continue",floor(width/2),floor(height/2));
+    if(isDead) text("dies after "+genCount+" generations.\nReset or modify the grid to continue",floor(width/2),floor(height/2));
+  }
   
   if (nextFrame) {
     nextFrame = false;
@@ -61,8 +95,8 @@ public void keyPressed() {
   frameRate(20);                                                                                          //simulation controls
   if (keyCode == 32) //spacebar to toggle running
     running = !running;
-  else if (keyCode == 220&&!running) //backslash to clear (when not running)
-    eraseScreen();
+  else if ((keyCode == 220||keyCode == 8)&&!running) //backslash to clear (when not running)
+    setup();
   else if (keyCode==192&&!running) {//tilde to randomize (when not running)
     for (int i = 0; i<NUM_ROWS; i++) {
       for (int j = 0; j<NUM_COLS; j++) {
@@ -90,7 +124,6 @@ public void keyPressed() {
   }
 else if(keyCode>=48&&keyCode<=57) { //"1-9" keys make shapes
     setup();
-    eraseScreen();
     switch(keyCode) {
       case 49:
         makeBlinker(floor(NUM_ROWS/2),floor(NUM_COLS/2));
@@ -141,16 +174,8 @@ public void printBuffer(int r, int c) { //for finding what cells need to be true
   }
 }
 **/
-
-public void eraseScreen() {
-  for (int i = 0; i<NUM_ROWS; i++) {
-    for (int j = 0; j<NUM_COLS; j++) {
-      buttons[i][j].setLife(false);
-      buffer[i][j]=false;
-    }
-  }
-}
 //data helper functions
+
 public void copyFromBufferToButtons() {
   for (int i = 0; i<NUM_ROWS; i++) {
     for (int j = 0; j<NUM_COLS; j++) {
@@ -164,6 +189,37 @@ public void copyFromButtonsToBuffer() {
       buffer[i][j] = buttons[i][j].getLife();
     }
   }
+}
+public void copyToOldBuffer() {
+  for (int i = 0; i<NUM_ROWS; i++) {
+    for (int j = 0; j<NUM_COLS; j++) {
+      oldBuffer[i][j] = buffer[i][j];
+    }
+  }
+}
+public boolean checkIfSame() {
+  boolean output = true;
+  for (int i = 0; i<NUM_ROWS; i++) {
+    for (int j = 0; j<NUM_COLS; j++) {
+      if(oldBuffer[i][j] != buffer[i][j]){
+        output = false;
+        break;
+      }
+    }
+  }
+  return output;
+}
+public boolean checkIfDead() {
+  boolean output = true;
+  for (int i = 0; i<NUM_ROWS; i++) {
+    for (int j = 0; j<NUM_COLS; j++) {
+      if(buffer[i][j]){
+        output = false;
+        break;
+      }
+    }
+  }
+  return output;
 }
 //helper functions
 public boolean isValid(int r, int c) {
@@ -219,6 +275,8 @@ public class Life {
   // called by manager
   public void mousePressed () {
     alive = !alive; //turn cell on and off with mouse press
+    isStable = isDead = false;
+    genCount = 0;
   }
   public void show () {
     fill(alive ? 200 : 100);
