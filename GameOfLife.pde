@@ -6,12 +6,14 @@ float CELL_SIZE;
 private Life[][] buttons; //2d array of Life buttons each representing one cell
 private boolean[][] buffer; //2d array of booleans to store state of buttons array
 private boolean[][] oldBuffer;
+private boolean[][] savedBuffer;
 private boolean running; //used to start and stop program
 public boolean nextFrame = false;
 public int framerate = 6;
 public int genCount;
 public boolean isDead;
 public boolean isStable;
+public boolean firstRun = true; //so the program knows when to reset the saved buffer
 
 
 
@@ -41,7 +43,13 @@ public void setup () {
   }
   
   oldBuffer=new boolean[NUM_ROWS][NUM_COLS];
-  copyToOldBuffer();
+  copyToBuffer(oldBuffer);
+  if(firstRun) {
+    savedBuffer=new boolean[NUM_ROWS][NUM_COLS];
+    copyToBuffer(savedBuffer);
+    firstRun = false;
+  }
+  
 }
 
 
@@ -72,7 +80,7 @@ public void draw () {
     isStable = true;
     genCount--;
   }
-  copyToOldBuffer();
+  copyToBuffer(oldBuffer);
   
   
   fill(255);
@@ -89,7 +97,7 @@ public void draw () {
   }
   if(isStable||isDead) {
     textAlign(CENTER,CENTER);
-    if(isStable) text("fully stable after "+genCount+" generations and onwards.\nReset or modify the grid to continue",floor(width/2),floor(height/2));
+    if(isStable) text("fully stable at generation "+genCount+" and onwards.\nReset or modify the grid to continue",floor(width/2),floor(height/2));
     if(isDead) text("dies at generation "+genCount+".\nReset or modify the grid to continue",floor(width/2),floor(height/2));
   }
   
@@ -117,9 +125,11 @@ public void keyPressed() {
   //change dimensions
   else if (keyCode==38&&!running&&!nextFrame) { //up key increases number of rows and cols
     NUM_COLS++;
+    firstRun = true;
     setup();
-  } else if (keyCode==40&&NUM_COLS>5&&NUM_ROWS>1&&!running&&!nextFrame) { //down key decreases number of rows and cols (minimum 10x10)
+  } else if (keyCode==40&&NUM_COLS>5&&NUM_ROWS>5&&!running&&!nextFrame) { //down key decreases number of rows and cols (minimum 10x10)
     NUM_COLS--;
+    firstRun = true;
     setup();
   }
   
@@ -133,43 +143,54 @@ else if(keyCode>=48&&keyCode<=57) { //"1-9" keys make shapes
     setup();
     switch(keyCode) {
       case 49:
-        makeBlinker(floor(NUM_ROWS/2),floor(NUM_COLS/2));
+        if(NUM_ROWS>=3&&NUM_COLS>=3) makeBlinker(floor(NUM_ROWS/2),floor(NUM_COLS/2));
         break;
       case 50:
-        makeToad(floor(NUM_ROWS/2),floor(NUM_COLS/2));
+        if(NUM_ROWS>=4&&NUM_COLS>=4) makeToad(floor(NUM_ROWS/2),floor(NUM_COLS/2));
         break;
       case 51:
-        makeBeacon(floor(NUM_ROWS/2),floor(NUM_COLS/2));
+        if(NUM_ROWS>=4&&NUM_COLS>=4) makeBeacon(floor(NUM_ROWS/2),floor(NUM_COLS/2));
         break;
       case 52:
-        makePulsar(floor(NUM_ROWS/2),floor(NUM_COLS/2));
+        if(NUM_ROWS>=13&&NUM_COLS>=13) makePulsar(floor(NUM_ROWS/2),floor(NUM_COLS/2));
         break;
       case 53:
-        makePentadecathlon(floor(NUM_ROWS/2),floor(NUM_COLS/2));
+        if(NUM_ROWS>=16&&NUM_COLS>=9) makePentadecathlon(floor(NUM_ROWS/2),floor(NUM_COLS/2));
         break;
       case 54:
-        makeGlider(1,1);
+        if(NUM_ROWS>=4&&NUM_COLS>=4) makeGlider(0,0);
         break;
       case 55:
-        makeLightWeightShip(floor(NUM_ROWS/2),1);
+         if(NUM_ROWS>=5&&NUM_COLS>=7) makeLightWeightShip(floor(NUM_ROWS/2),0);
         break;
       case 56:
-        makeMedWeightShip(floor(NUM_ROWS/2),1);
+        if(NUM_ROWS>=7&&NUM_COLS>=8) makeMedWeightShip(floor(NUM_ROWS/2),0);
         break;
       case 57:
-        makeHeavyWeightShip(floor(NUM_ROWS/2),1);
+        if(NUM_ROWS>=7&&NUM_COLS>=9) makeHeavyWeightShip(floor(NUM_ROWS/2),0);
         break;
       case 48:
-        makeGosperGun(1,1);
+        if(NUM_ROWS>=12&&NUM_COLS>=36)makeGosperGun(0,0);
+        break;
     }
     copyFromBufferToButtons();
   }
-  //else if(keyCode == 80) printBuffer(1,1);
+  
+  else if(keyCode == 83&&!running) { //if you hit s, save the current state of the buffer
+    copyToBuffer(savedBuffer);
+    println("saved");
+  }
+  else if(keyCode == 76&&!running) { //if you hit l, load in the buffer. WIP
+    buffer = savedBuffer;
+    copyFromBufferToButtons();
+    println("load");
+  }
+  
   if(running&&!nextFrame) frameRate(framerate);
 }
 
 /**
-public void printBuffer(int r, int c) { //for finding what cells need to be true to make a shape. Not needed in the final program, but I'm keeping it here nonetheless.
+public void saveBuffer(int r, int c) { //for finding what cells need to be true to make a shape. Not needed in the final program, but I'm keeping it here nonetheless.
   copyFromButtonsToBuffer();
   println("\n\n\n\n");
   for (int i = 0; i<NUM_ROWS; i++) {
@@ -181,6 +202,7 @@ public void printBuffer(int r, int c) { //for finding what cells need to be true
   }
 }
 **/
+
 //data helper functions
 public void copyFromBufferToButtons() {
   for (int i = 0; i<NUM_ROWS; i++) {
@@ -196,10 +218,10 @@ public void copyFromButtonsToBuffer() {
     }
   }
 }
-public void copyToOldBuffer() {
+public void copyToBuffer(boolean copyTo[][]) {
   for (int i = 0; i<NUM_ROWS; i++) {
     for (int j = 0; j<NUM_COLS; j++) {
-      oldBuffer[i][j] = buffer[i][j];
+      copyTo[i][j] = buffer[i][j];
     }
   }
 }
