@@ -13,32 +13,39 @@ public int genCount;
 public boolean isDead;
 public boolean isStable;
 
+
+
 public void setup () {
-  size(1000, 600); //size((int)(0.95*window.innerWidth), (int)(0.95*window.innerHeight));
+  size((int)(0.95*window.innerWidth), (int)(0.95*window.innerHeight));
   frameRate(framerate);
   CELL_SIZE=(float)width/NUM_COLS;
   NUM_ROWS=(int)floor(height/CELL_SIZE);
+  
   genCount = 0;
-  isDead = isStable = false;
-  textAlign(CENTER,CENTER);
-  // make the manager
+  isDead = isStable = running = false;
+  
   Interactive.make( this );
-  running = false;
+  
   buttons = new Life[NUM_ROWS][NUM_COLS];
   for (int i = 0; i<NUM_ROWS; i++) {
     for (int j = 0; j<NUM_COLS; j++) {
       buttons[i][j] = new Life(i, j);
     }
   }
+  
   buffer = new boolean[NUM_ROWS][NUM_COLS];
   for (int i = 0; i<NUM_ROWS; i++) {
     for (int j = 0; j<NUM_COLS; j++) {
       buffer[i][j] = new Boolean(buttons[i][j].getLife());
     }
   }
+  
   oldBuffer=new boolean[NUM_ROWS][NUM_COLS];
   copyToOldBuffer();
 }
+
+
+
 public void draw () {
   background( 0 );
   if(running) {
@@ -83,7 +90,7 @@ public void draw () {
   if(isStable||isDead) {
     textAlign(CENTER,CENTER);
     if(isStable) text("fully stable after "+genCount+" generations and onwards.\nReset or modify the grid to continue",floor(width/2),floor(height/2));
-    if(isDead) text("dies after "+genCount+" generations.\nReset or modify the grid to continue",floor(width/2),floor(height/2));
+    if(isDead) text("dies at generation "+genCount+".\nReset or modify the grid to continue",floor(width/2),floor(height/2));
   }
   
   if (nextFrame) {
@@ -175,7 +182,6 @@ public void printBuffer(int r, int c) { //for finding what cells need to be true
 }
 **/
 //data helper functions
-
 public void copyFromBufferToButtons() {
   for (int i = 0; i<NUM_ROWS; i++) {
     for (int j = 0; j<NUM_COLS; j++) {
@@ -197,6 +203,8 @@ public void copyToOldBuffer() {
     }
   }
 }
+
+//Functions to check for stability
 public boolean checkIfSame() {
   boolean output = true;
   for (int i = 0; i<NUM_ROWS; i++) {
@@ -221,6 +229,7 @@ public boolean checkIfDead() {
   }
   return output;
 }
+
 //helper functions
 public boolean isValid(int r, int c) {
   boolean output = false;
@@ -242,6 +251,8 @@ public int countNeighbors(int row, int col) {
   }
   return neighbors;
 }
+
+
 //shapes:
 //osclilators: start in the middle
 public void makeBlinker(int r,int c) {  buffer[r][c]=buffer[r-1][c]=buffer[r+1][c]=true;  }
@@ -258,6 +269,7 @@ public void makeGosperGun(int r, int c) {  buffer[r+0][c+24]=buffer[r+1][c+22]=b
 //see https://playgameoflife.com/lexicon for more possibilities
 
 
+//Object class
 public class Life {
   private int myRow, myCol;
   private float x, y, width, height;
