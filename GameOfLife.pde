@@ -14,6 +14,7 @@ public int genCount;
 public boolean isDead;
 public boolean isStable;
 public boolean firstRun = true; //so the program knows when to reset the saved buffer
+public boolean justModified = false; //so the program knows when to save the buffer
 
 
 
@@ -38,6 +39,12 @@ public void setup () {
     for (int j = 0; j<NUM_COLS; j++) {
       buffer[i][j] = new Boolean(buttons[i][j].getLife());
     }
+  }
+  
+  if(firstRun) {
+    savedBuffer=new boolean[NUM_ROWS][NUM_COLS];
+    copyToBuffer(savedBuffer);
+    firstRun = false;
   }
   
   genCount = 0;
@@ -91,8 +98,8 @@ public void draw () {
   }
   if(isStable||isDead) {
     textAlign(CENTER,CENTER);
-    if(isStable) text("fully stable at generation "+genCount+" and onwards.\nReset or modify the grid to continue",floor(width/2),floor(height/2));
-    if(isDead) text("dies at generation "+genCount+".\nReset or modify the grid to continue",floor(width/2),floor(height/2));
+    if(isStable) text("fully stable at generation "+genCount+" and onwards.\nModify the grid or press [r] to reset it to continue",floor(width/2),floor(height/2));
+    if(isDead) text("dies at generation "+genCount+".\nModify the grid or press [r] to reset it to continue",floor(width/2),floor(height/2));
   }
   
   if (nextFrame) {
@@ -102,8 +109,12 @@ public void draw () {
 }
 public void keyPressed() {
   frameRate(20);                                                                                          //simulation controls
-  if (keyCode == 32) //spacebar to toggle running
+  if (keyCode == 32) {//spacebar to toggle running
+    if(!running&&justModified) {
+      copyToBuffer(savedBuffer);
+    }
     running = !running;
+  }
   else if ((keyCode == 220||keyCode == 8)&&!running) //backslash to clear (when not running)
     setup();
   else if (keyCode==192&&!running) {//tilde to randomize (when not running)
@@ -170,14 +181,10 @@ else if(keyCode>=48&&keyCode<=57&&!running) { //"1-9" keys make shapes
     copyFromBufferToButtons();
   }
   
-  else if(keyCode == 83&&!running) { //if you hit s, save the current state of the buffer
-    copyToBuffer(savedBuffer);
-    println("saved");
-  }
-  else if(keyCode == 76&&!running) { //if you hit l, load in the buffer. WIP
+  else if(keyCode == 82&&!running) { //if you hit r, reset to last saved
     buffer = savedBuffer;
+    reset();
     copyFromBufferToButtons();
-    println("load");
   }
   
   if(running&&!nextFrame) frameRate(framerate);
@@ -234,8 +241,7 @@ public boolean checkIfDead() {
 public void reset() {
   genCount = 0;
   isDead = isStable = running = false;
-  oldBuffer=new boolean[NUM_ROWS][NUM_COLS];
-  copyToBuffer(oldBuffer);
+  justModified = true;
 }
 
 //helper functions
@@ -297,8 +303,7 @@ public class Life {
   // called by manager
   public void mousePressed () {
     alive = !alive; //turn cell on and off with mouse press
-    isStable = isDead = false;
-    genCount = 0;
+    reset();
   }
   public void show () {
     fill(alive ? 200 : 100);
