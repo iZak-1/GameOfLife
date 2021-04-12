@@ -14,7 +14,7 @@ public int genCount;
 public boolean isDead;
 public boolean isStable;
 public boolean firstRun = true; //so the program knows when to reset the saved buffer
-public boolean justModified = false; //so the program knows when to save the buffer
+public boolean justModified; //so the program knows when to save the buffer
 
 
 
@@ -23,7 +23,7 @@ public void setup () {
   frameRate(framerate);
   CELL_SIZE=(float)width/NUM_COLS;
   NUM_ROWS=(int)floor(height/CELL_SIZE);
-  
+  justModified = false;
   
   Interactive.make( this );
   
@@ -47,8 +47,7 @@ public void setup () {
     firstRun = false;
   }
   
-  genCount = 0;
-  isDead = isStable = running = false;
+  reset();
   oldBuffer=new boolean[NUM_ROWS][NUM_COLS];
   copyToBuffer(oldBuffer);
 }
@@ -111,13 +110,26 @@ public void keyPressed() {
   frameRate(20);                                                                                          //simulation controls
   if (keyCode == 32) {//spacebar to toggle running
     if(!running&&justModified) {
+      savedBuffer=new boolean[NUM_ROWS][NUM_COLS];
       copyToBuffer(savedBuffer);
+      justModified = false;
+      println("saved");
     }
     running = !running;
   }
-  else if ((keyCode == 220||keyCode == 8)&&!running) //backslash to clear (when not running)
-    setup();
+  else if ((keyCode == 220||keyCode == 8)&&!running) {//backslash to clear (when not running)- backspace in processing
+    reset();
+    //setup();
+    for (int i = 0; i<NUM_ROWS; i++) {
+      for (int j = 0; j<NUM_COLS; j++) {
+        buttons[i][j] = new Life(i, j);
+      }
+    }
+    copyFromButtonsToBuffer();
+    copyToBuffer(oldBuffer);
+  }
   else if (keyCode==192&&!running) {//tilde to randomize (when not running)
+    reset();
     for (int i = 0; i<NUM_ROWS; i++) {
       for (int j = 0; j<NUM_COLS; j++) {
         buffer[i][j] = Math.random()<0.5;
@@ -144,8 +156,14 @@ public void keyPressed() {
   } else if (keyCode==37&&framerate>1) { //downarrow=-1fps
     framerate--;
   }
-else if(keyCode>=48&&keyCode<=57&&!running) { //"1-9" keys make shapes
+  
+  else if(keyCode == 82&&!running) { //if you hit r, reset to last saved
     reset();
+    buffer = savedBuffer;
+    copyFromBufferToButtons();
+  }
+  
+  else if(keyCode>=48&&keyCode<=57&&!running) { //"1-9" keys make shapes
     switch(keyCode) {
       case 49:
         makeBlinker(floor(mouseY/CELL_SIZE),floor(mouseX/CELL_SIZE));
@@ -178,12 +196,6 @@ else if(keyCode>=48&&keyCode<=57&&!running) { //"1-9" keys make shapes
         makeGosperGun(floor(mouseY/CELL_SIZE),floor(mouseX/CELL_SIZE));
         break;
     }
-    copyFromBufferToButtons();
-  }
-  
-  else if(keyCode == 82&&!running) { //if you hit r, reset to last saved
-    buffer = savedBuffer;
-    reset();
     copyFromBufferToButtons();
   }
   
@@ -226,6 +238,8 @@ public boolean checkIfSame() {
   }
   return output;
 }
+
+
 public boolean checkIfDead() {
   boolean output = true;
   for (int i = 0; i<NUM_ROWS; i++) {
@@ -267,21 +281,23 @@ public int countNeighbors(int row, int col) {
 }
 
 
+
+
 //shapes:
 //osclilators: start in the middle
-public void makeBlinker(int r,int c) {  if(r-1>=0&&r+1<NUM_ROWS&&c-1>=0&&c+1<NUM_COLS) buffer[r][c]=buffer[r-1][c]=buffer[r+1][c]=true;  }
-public void makeToad(int r,int c) {  if(r-2>=0&&r+1<NUM_ROWS&&c-2>=0&&c+1<NUM_COLS) buffer[r][c-1]=buffer[r][c]=buffer[r][c-2]=buffer[r-1][c-1]=buffer[r-1][c]=buffer[r-1][c+1]=true;  }
-public void makeBeacon(int r,int c) {  if(r-2>=0&&r+1<NUM_ROWS&&c-2>=0&&c+1<NUM_COLS) buffer[r-1][c-1]=buffer[r-1][c-2]=buffer[r-2][c-1]=buffer[r-2][c-2]=buffer[r][c]=buffer[r][c+1]=buffer[r+1][c]=buffer[r+1][c+1]=true;  }
-public void makePulsar(int r,int c) {  if(r-6>=0&&r+6<NUM_ROWS&&c-6>=0&&c+6<NUM_COLS) buffer[r-6][c-4]=buffer[r-6][c-3]=buffer[r-6][c-2]=buffer[r-6][c+2]=buffer[r-6][c+3]=buffer[r-6][c+4]=buffer[r-4][c-6]=buffer[r-4][c-1]=buffer[r-4][c+1]=buffer[r-4][c+6]=buffer[r-3][c-6]=buffer[r-3][c-1]=buffer[r-3][c+1]=buffer[r-3][c+6]=buffer[r-2][c-6]=buffer[r-2][c-1]=buffer[r-2][c+1]=buffer[r-2][c+6]=buffer[r-1][c-4]=buffer[r-1][c-3]=buffer[r-1][c-2]=buffer[r-1][c+2]=buffer[r-1][c+3]=buffer[r-1][c+4]=buffer[r+1][c-4]=buffer[r+1][c-3]=buffer[r+1][c-2]=buffer[r+1][c+2]=buffer[r+1][c+3]=buffer[r+1][c+4]=buffer[r+2][c-6]=buffer[r+2][c-1]=buffer[r+2][c+1]=buffer[r+2][c+6]=buffer[r+3][c-6]=buffer[r+3][c-1]=buffer[r+3][c+1]=buffer[r+3][c+6]=buffer[r+4][c-6]=buffer[r+4][c-1]=buffer[r+4][c+1]=buffer[r+4][c+6]=buffer[r+6][c-4]=buffer[r+6][c-3]=buffer[r+6][c-2]=buffer[r+6][c+2]=buffer[r+6][c+3]=buffer[r+6][c+4]=true;  }
-public void makePentadecathlon(int r, int c) {  if(r-8>=0&&r+7<NUM_ROWS&&c-4>=0&&c+4<NUM_COLS) buffer[r-5][c]=buffer[r-4][c]=buffer[r-3][c-1]=buffer[r-3][c+1]=buffer[r-2][c]=buffer[r-1][c]=buffer[r][c]=buffer[r+1][c]=buffer[r+2][c-1]=buffer[r+2][c+1]=buffer[r+3][c]=buffer[r+4][c]=true;  }
-public void makeP16(int r, int c) {  if(r-7>=0&&r+7<NUM_ROWS&&c-7>=0&&c+7<NUM_COLS) buffer[r+-6][c+1]=buffer[r+-6][c+2]=buffer[r+-5][c+1]=buffer[r+-5][c+3]=buffer[r+-4][c+-4]=buffer[r+-4][c+1]=buffer[r+-4][c+3]=buffer[r+-4][c+4]=buffer[r+-3][c+-5]=buffer[r+-3][c+-4]=buffer[r+-3][c+2]=buffer[r+-2][c+-6]=buffer[r+-2][c+-3]=buffer[r+-1][c+-6]=buffer[r+-1][c+-5]=buffer[r+-1][c+-4]=buffer[r+1][c+4]=buffer[r+1][c+5]=buffer[r+1][c+6]=buffer[r+2][c+3]=buffer[r+2][c+6]=buffer[r+3][c+-2]=buffer[r+3][c+4]=buffer[r+3][c+5]=buffer[r+4][c+-4]=buffer[r+4][c+-3]=buffer[r+4][c+-1]=buffer[r+4][c+4]=buffer[r+5][c+-3]=buffer[r+5][c+-1]=buffer[r+6][c+-2]=buffer[r+6][c+-1]=true;  }
+public void makeBlinker(int r,int c) {  if(r-1>=0&&r+1<NUM_ROWS&&c-1>=0&&c+1<NUM_COLS){reset();  buffer[r][c]=buffer[r-1][c]=buffer[r+1][c]=true;  }}
+public void makeToad(int r,int c) {  if(r-2>=0&&r+1<NUM_ROWS&&c-2>=0&&c+1<NUM_COLS){reset();  buffer[r][c-1]=buffer[r][c]=buffer[r][c-2]=buffer[r-1][c-1]=buffer[r-1][c]=buffer[r-1][c+1]=true;  }}
+public void makeBeacon(int r,int c) {  if(r-2>=0&&r+1<NUM_ROWS&&c-2>=0&&c+1<NUM_COLS){reset();  buffer[r-1][c-1]=buffer[r-1][c-2]=buffer[r-2][c-1]=buffer[r-2][c-2]=buffer[r][c]=buffer[r][c+1]=buffer[r+1][c]=buffer[r+1][c+1]=true;  }}
+public void makePulsar(int r,int c) {  if(r-6>=0&&r+6<NUM_ROWS&&c-6>=0&&c+6<NUM_COLS){reset();  buffer[r-6][c-4]=buffer[r-6][c-3]=buffer[r-6][c-2]=buffer[r-6][c+2]=buffer[r-6][c+3]=buffer[r-6][c+4]=buffer[r-4][c-6]=buffer[r-4][c-1]=buffer[r-4][c+1]=buffer[r-4][c+6]=buffer[r-3][c-6]=buffer[r-3][c-1]=buffer[r-3][c+1]=buffer[r-3][c+6]=buffer[r-2][c-6]=buffer[r-2][c-1]=buffer[r-2][c+1]=buffer[r-2][c+6]=buffer[r-1][c-4]=buffer[r-1][c-3]=buffer[r-1][c-2]=buffer[r-1][c+2]=buffer[r-1][c+3]=buffer[r-1][c+4]=buffer[r+1][c-4]=buffer[r+1][c-3]=buffer[r+1][c-2]=buffer[r+1][c+2]=buffer[r+1][c+3]=buffer[r+1][c+4]=buffer[r+2][c-6]=buffer[r+2][c-1]=buffer[r+2][c+1]=buffer[r+2][c+6]=buffer[r+3][c-6]=buffer[r+3][c-1]=buffer[r+3][c+1]=buffer[r+3][c+6]=buffer[r+4][c-6]=buffer[r+4][c-1]=buffer[r+4][c+1]=buffer[r+4][c+6]=buffer[r+6][c-4]=buffer[r+6][c-3]=buffer[r+6][c-2]=buffer[r+6][c+2]=buffer[r+6][c+3]=buffer[r+6][c+4]=true;  }}
+public void makePentadecathlon(int r, int c) {  if(r-8>=0&&r+7<NUM_ROWS&&c-4>=0&&c+4<NUM_COLS){reset();  buffer[r-5][c]=buffer[r-4][c]=buffer[r-3][c-1]=buffer[r-3][c+1]=buffer[r-2][c]=buffer[r-1][c]=buffer[r][c]=buffer[r+1][c]=buffer[r+2][c-1]=buffer[r+2][c+1]=buffer[r+3][c]=buffer[r+4][c]=true;  }}
+public void makeP16(int r, int c) {  if(r-7>=0&&r+7<NUM_ROWS&&c-7>=0&&c+7<NUM_COLS){reset();  buffer[r+-6][c+1]=buffer[r+-6][c+2]=buffer[r+-5][c+1]=buffer[r+-5][c+3]=buffer[r+-4][c+-4]=buffer[r+-4][c+1]=buffer[r+-4][c+3]=buffer[r+-4][c+4]=buffer[r+-3][c+-5]=buffer[r+-3][c+-4]=buffer[r+-3][c+2]=buffer[r+-2][c+-6]=buffer[r+-2][c+-3]=buffer[r+-1][c+-6]=buffer[r+-1][c+-5]=buffer[r+-1][c+-4]=buffer[r+1][c+4]=buffer[r+1][c+5]=buffer[r+1][c+6]=buffer[r+2][c+3]=buffer[r+2][c+6]=buffer[r+3][c+-2]=buffer[r+3][c+4]=buffer[r+3][c+5]=buffer[r+4][c+-4]=buffer[r+4][c+-3]=buffer[r+4][c+-1]=buffer[r+4][c+4]=buffer[r+5][c+-3]=buffer[r+5][c+-1]=buffer[r+6][c+-2]=buffer[r+6][c+-1]=true;  }}
 //spaceships: ideally star near the upper-left corner for the glider (measured from upper its own upper left corner) or center left (for the others, also measured relatively)
-public void makeGlider(int r, int c) {  if(r>=0&&r+2<NUM_ROWS&&c>=0&&c+2<NUM_COLS) buffer[r][c]=buffer[r+1][c+1]=buffer[r+1][c+2]=buffer[r+2][c]=buffer[r+2][c+1]=true;  }
-public void makeLightWeightShip(int r, int c) {  if(r-2>=0&&r+2<NUM_ROWS&&c>=0&&c+6<NUM_COLS) buffer[r-1][c+1]=buffer[r-1][c+2]=buffer[r-1][c+3]=buffer[r-1][c+4]=buffer[r][c]=buffer[r][c+4]=buffer[r+1][c+4]=buffer[r+2][c]=buffer[r+2][c+3]=true;  }
+public void makeGlider(int r, int c) {  if(r>=0&&r+2<NUM_ROWS&&c>=0&&c+2<NUM_COLS){reset();  buffer[r][c]=buffer[r+1][c+1]=buffer[r+1][c+2]=buffer[r+2][c]=buffer[r+2][c+1]=true;  }}
+public void makeLightWeightShip(int r, int c) {  if(r-2>=0&&r+2<NUM_ROWS&&c>=0&&c+6<NUM_COLS){reset();  buffer[r-1][c+1]=buffer[r-1][c+2]=buffer[r-1][c+3]=buffer[r-1][c+4]=buffer[r][c]=buffer[r][c+4]=buffer[r+1][c+4]=buffer[r+2][c]=buffer[r+2][c+3]=true;  }}
 //chaos
-public void makeGliderMess(int r, int c) {  if(r-3>=0&&r+2<NUM_ROWS&&c-6>=0&&c+5<NUM_COLS) buffer[r+-3][c+-4]=buffer[r+-2][c+-6]=buffer[r+-2][c+-4]=buffer[r+-1][c+-5]=buffer[r+-1][c+-4]=buffer[r+0][c+5]=buffer[r+1][c+3]=buffer[r+1][c+4]=buffer[r+2][c+4]=buffer[r+2][c+5]=true;  }
+public void makeGliderMess(int r, int c) {  if(r-3>=0&&r+2<NUM_ROWS&&c-6>=0&&c+5<NUM_COLS){reset();  buffer[r+-3][c+-4]=buffer[r+-2][c+-6]=buffer[r+-2][c+-4]=buffer[r+-1][c+-5]=buffer[r+-1][c+-4]=buffer[r+0][c+5]=buffer[r+1][c+3]=buffer[r+1][c+4]=buffer[r+2][c+4]=buffer[r+2][c+5]=true;  }}
 //gosper gun: make it bigger
-public void makeGosperGun(int r, int c) {  if(r-4>=0&&r+4<NUM_ROWS&&c-17>=0&&c+18<NUM_COLS) buffer[r+-4][c+7]=buffer[r+-3][c+5]=buffer[r+-3][c+7]=buffer[r+-2][c+-5]=buffer[r+-2][c+-4]=buffer[r+-2][c+3]=buffer[r+-2][c+4]=buffer[r+-2][c+17]=buffer[r+-2][c+18]=buffer[r+-1][c+-6]=buffer[r+-1][c+-2]=buffer[r+-1][c+3]=buffer[r+-1][c+4]=buffer[r+-1][c+17]=buffer[r+-1][c+18]=buffer[r+0][c+-17]=buffer[r+0][c+-16]=buffer[r+0][c+-7]=buffer[r+0][c+-1]=buffer[r+0][c+3]=buffer[r+0][c+4]=buffer[r+1][c+-17]=buffer[r+1][c+-16]=buffer[r+1][c+-7]=buffer[r+1][c+-3]=buffer[r+1][c+-1]=buffer[r+1][c+0]=buffer[r+1][c+5]=buffer[r+1][c+7]=buffer[r+2][c+-7]=buffer[r+2][c+-1]=buffer[r+2][c+7]=buffer[r+3][c+-6]=buffer[r+3][c+-2]=buffer[r+4][c+-5]=buffer[r+4][c+-4]=true;  }
+public void makeGosperGun(int r, int c) {  if(r-4>=0&&r+4<NUM_ROWS&&c-17>=0&&c+18<NUM_COLS){reset();  buffer[r+-4][c+7]=buffer[r+-3][c+5]=buffer[r+-3][c+7]=buffer[r+-2][c+-5]=buffer[r+-2][c+-4]=buffer[r+-2][c+3]=buffer[r+-2][c+4]=buffer[r+-2][c+17]=buffer[r+-2][c+18]=buffer[r+-1][c+-6]=buffer[r+-1][c+-2]=buffer[r+-1][c+3]=buffer[r+-1][c+4]=buffer[r+-1][c+17]=buffer[r+-1][c+18]=buffer[r+0][c+-17]=buffer[r+0][c+-16]=buffer[r+0][c+-7]=buffer[r+0][c+-1]=buffer[r+0][c+3]=buffer[r+0][c+4]=buffer[r+1][c+-17]=buffer[r+1][c+-16]=buffer[r+1][c+-7]=buffer[r+1][c+-3]=buffer[r+1][c+-1]=buffer[r+1][c+0]=buffer[r+1][c+5]=buffer[r+1][c+7]=buffer[r+2][c+-7]=buffer[r+2][c+-1]=buffer[r+2][c+7]=buffer[r+3][c+-6]=buffer[r+3][c+-2]=buffer[r+4][c+-5]=buffer[r+4][c+-4]=true;  }}
 //see https://playgameoflife.com/lexicon for more possibilities
 
 
@@ -319,7 +335,7 @@ public class Life {
 
 
 
-//NOT USED
+//NOT USED ANYMORE
 /**
 public void printBuffer(int r, int c) { //for finding what cells need to be true to make a shape. Not needed in the final program, but I'm keeping it here nonetheless.
   copyFromButtonsToBuffer();
