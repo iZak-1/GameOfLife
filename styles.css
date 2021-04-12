@@ -1,8 +1,7 @@
 body {
     background-color: rgb(200,200,200);
     color: rgb(0,0,0);
-    font-family: "Open Sans", sans-serif;
-    text-align: center;
+    font-family: "Verdana", sans-serif;
 }
 
 #content {
@@ -12,11 +11,12 @@ body {
 }
 
 header {
-	
+  text-align: center;
 }
 
 ul {
-  padding-left: 10px;
+  text-align: left;
+  padding-left: 15px;
 }
 
 footer {
