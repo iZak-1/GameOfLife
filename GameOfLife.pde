@@ -5,21 +5,26 @@ int NUM_COLS=20;
 float CELL_SIZE; //will be calculated in setup
 private Life[][] buttons; //2d array of Life buttons each representing one cell
 private boolean[][] buffer; //2d array of booleans to store state of buttons array
-private boolean[][] oldBuffer; //used to see if the state is stable
-private boolean[][] savedBuffer; //
-private boolean running; //used to start and stop program
-public boolean nextFrame = false; //used to indicate whether we're just going forward 1 frame
-public int framerate = 6; //variable, not constant
-public int genCount; //dynamically tracks generations since modification
-public boolean isDead; //is everything on the board dead?
-public boolean isStable; //is nothing moving?
-public boolean firstRun = true; //so the program knows when to reset the saved buffer
-public boolean justModified; //so the program knows when to save the buffer
+boolean[][] oldBuffer; //used to see if the state is stable
+boolean[][] savedBuffer; //used to save the state of the game at last modification
+boolean[][] customShape; //user-made shape
+  int lowestR;
+  int lowestC;
+  int highestR;
+  int highestC;
+boolean running; //used to start and stop program
+boolean nextFrame = false; //used to indicate whether we're just going forward 1 frame
+int framerate = 6; //variable, not constant
+int genCount; //dynamically tracks generations since modification
+boolean isDead; //is everything on the board dead?
+boolean isStable; //is nothing moving?
+boolean firstRun = true; //so the program knows when to reset the saved buffer
+boolean justModified; //so the program knows when to save the buffer
 
 
 
 public void setup () {
-  size((int)(0.95*window.innerWidth), (int)(0.95*window.innerHeight));
+  size((int)(0.975*window.innerWidth), (int)(0.975*window.innerHeight));
   frameRate(framerate);
   CELL_SIZE=(float)width/NUM_COLS;
   NUM_ROWS=(int)floor(height/CELL_SIZE);
@@ -163,7 +168,13 @@ public void keyPressed() {
     buffer = savedBuffer;
     copyFromBufferToButtons();
   }
-  
+  else if(keyCode==67&&!running) {//copy
+    copyShape(floor(mouseY/CELL_SIZE),floor(mouseX/CELL_SIZE));
+  }
+  else if(keyCode==80&&!running) {//paste
+    pasteShape(floor(mouseY/CELL_SIZE),floor(mouseX/CELL_SIZE));
+    copyFromBufferToButtons();
+  }
   else if(keyCode>=48&&keyCode<=57&&!running) { //"1-9" keys make shapes
     switch(keyCode) {
       case 49:
@@ -258,6 +269,41 @@ public void resetCounters() {
   genCount = 0;
   isDead = isStable = running = false;
   justModified = true;
+}
+
+//used to copy-paste user-generated shape
+public void copyShape(int r, int c) {
+  copyFromButtonsToBuffer();
+  lowestC=c; //set the bounds to be the selected cell
+  highestC=c;
+  lowestR=r;
+  highestR=r;
+  for (int i = 0; i<NUM_ROWS; i++) { for (int j = 0; j<NUM_COLS; j++) { //find lowest and highest column and row values
+    if(buffer[i][j]){
+      if(j<=lowestC) lowestC=j;
+      if(i<=lowestR) lowestR=i;
+      if(j>=highestC) highestC=j;
+      if(i>=highestR) highestR=i;
+    }
+  }}
+  lowestC-=c;    //offset those values by the selected cell's position, making them relative coordinates
+  highestC-=c;
+  lowestR-=r;
+  highestR-=r;
+  
+  customShape = new boolean[1+highestR-lowestR][1+highestC-lowestC];    //initialize the custom shape variable
+  for (int i = 0; i<=highestR-lowestR; i++) { for (int j = 0; j<=highestC-lowestC; j++) { //cycle through the bounds of the customshape 
+    if(buffer[i+r+lowestR][j+c+lowestC]) customShape[i][j] = new Boolean(true);  //if the on the screen is true, then make the position RELATIVE TO THE TOP LEFT of the shape array true as well
+      else customShape[i][j] = new Boolean(false); //otherwise, make it false
+  }}
+}
+public void pasteShape(int r, int c) {
+  if(r+lowestR>=0&&c+lowestC>=0&&r+highestR<NUM_ROWS&&c+highestC<NUM_COLS) {//check that it's not out of bounds
+    resetCounters();//reset counters (doing it here so that it doesnt reset them if it's not out of bouds
+    for (int i = 0; i<=highestR-lowestR; i++) { for (int j = 0; j<=highestC-lowestC; j++) { //set buffer positions to true
+      if(customShape[i][j]) buffer[i+r+lowestR][j+c+lowestC]=true;
+    }}
+  }
 }
 
 //helper functions
