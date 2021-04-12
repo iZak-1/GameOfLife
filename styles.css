@@ -14,9 +14,10 @@ body {
 header {
   text-align: center;
 }
-
+ul {
+	padding-left: 15px;
+	text-align: left;
+}
 footer {
 	font-size: 100%;
-	text-align: left;
-  	padding-left: 15px;
 }
