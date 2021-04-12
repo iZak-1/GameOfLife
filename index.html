@@ -23,10 +23,24 @@
 		    Backslash [\]: Clear the grid. Only works when paused <br>
 		    Tilde [~] (but without the shift, so actually a backquote `): Randomize the state of the grid. Only works when paused.<br>
 		    Enter: Move forward one generation (one frame). Only works when paused <br>
-		    To save the current state of the grid, press the [S] key. To load it back in, press the [L] key. Note that changing the size of the grid clears whatever you have saved. Only works when paused.<br>
+		    Press [r] to reset the board to generation 0. Only works when paused<br>
 		    <br>
 		    1-9 and 0 keys (not on the numpad) import different patterns to wherever the mouse is positioned. If the object doesn't show up when you press the key, it means you need to increase the size of the grid, or move the mouse. Only works when paused.
 		    <br>
+		    <br>[1] creates an 'oscillator' (shape that cycles between multiple states called a blinker. It is important with its center at the mouse position, and takes up a 3x3 space.
+		    <br>[2] creates another oscillator called toad, centered at the mouse's position. The toad takes up a 4x4 area.
+		    <br>[3] creates a beacon oscillator centered on the mouse, which also takes up a 4x4 space.
+		    <br>[4] creates a pulsar oscillator, which at its largest takes up a 13x13 area.
+		    <br>[5] creates a Pentadecathlon, which takes up a 16x9 area.
+		    <br>[6] creates a P16 shape, which is the final oscillator, and takes up a 15x15 bounding box.
+		    <br>[7] creates a type of 'spaceship' (an object that moves accross the grid) called a glider, which moves southeast. It takes up a 3x3 area. It is imported with its top left cell at the mouse's position.
+		    <br>[8] creates another spaceship known as a lightweight spaceship, which moves horizontally accross the screen to the right. It is imported with the center left pixel at the mouse's position, and takes up a 7x5 area in order to move itself forward.
+		    <br>[9] creates two gliders in a specific place. What's special about this is that after colliding, the gliders expand for a large number of generations before finally settling on a shape. It is imported with its center over the mouse. Initially taking up a 12x6 area, it expands well beyond those bounds.
+		    <br>[0] creates something known as a 'gun', which shoots out other shapes. This gun is called a Gosper gun (named for the discoverer), and shoots gliders to the southeast. It takes up a large 36x9 space, but needs more space for the gliders to actually survive long enough to be recognizable as gliders.		    
+		    
+
+		    
+		    
 		    There are more interesting shapes listed on the <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life#Examples_of_patterns">wikipedia page</a> for the game of life, as well as on the online game of life's <a href="https://playgameoflife.com/lexicon">lexicon page</a><br>
 	    </footer>
 	</body>
@@ -49,4 +63,5 @@ v1.5.0: fully fixed, controls work, added another creatable object.
 v1.6.0: game will autopause and tell you once stability or death is reached.
 v1.7.0: added support for loading and saving buffers.
 v1.8.0: objects added are added to where the mouse is.
+v1.8.1: fixed a bug with the save, added more documentation on importable objects.
 -->
