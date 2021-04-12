@@ -24,7 +24,7 @@ boolean justModified; //so the program knows when to save the buffer
 
 
 public void setup () {
-  size((int)(0.975*window.innerWidth), (int)(0.975*window.innerHeight));
+  size((int)(0.9*window.innerWidth), (int)(0.9*window.innerHeight));
   frameRate(framerate);
   CELL_SIZE=(float)width/NUM_COLS;
   NUM_ROWS=(int)floor(height/CELL_SIZE);
