@@ -1,7 +1,7 @@
 import de.bezier.guido.*;
 //Declare and initialize constants NUM_ROWS and NUM_COLS = 20 //
 int NUM_ROWS; //will be decided by the program in setup()
-int NUM_COLS=20;
+int NUM_COLS=150;
 float CELL_SIZE; //will be calculated in setup
 private Life[][] buttons; //2d array of Life buttons each representing one cell
 private boolean[][] buffer; //2d array of booleans to store state of buttons array
@@ -24,7 +24,7 @@ boolean justModified; //so the program knows when to save the buffer
 
 
 public void setup () {
-  size((int)(0.9*window.innerWidth), (int)(0.9*window.innerHeight));
+  size((int)(0.975*window.innerWidth), (int)(0.975*window.innerHeight));
   frameRate(framerate);
   CELL_SIZE=(float)width/NUM_COLS;
   NUM_ROWS=(int)floor(height/CELL_SIZE);
@@ -124,6 +124,7 @@ public void keyPressed() {
     running = !running;
   }
   else if ((keyCode == 220||keyCode == 8)&&!running) {//backslash to clear (when not running)- backspace in processing
+    println("\n\n\n\n");
     resetCounters();
     //setup();
     for (int i = 0; i<NUM_ROWS; i++) {
@@ -290,18 +291,27 @@ public void copyShape(int r, int c) {
   highestC-=c;
   lowestR-=r;
   highestR-=r;
-  
+
   customShape = new boolean[1+highestR-lowestR][1+highestC-lowestC];    //initialize the custom shape variable
   for (int i = 0; i<=highestR-lowestR; i++) { for (int j = 0; j<=highestC-lowestC; j++) { //cycle through the bounds of the customshape 
-    if(buffer[i+r+lowestR][j+c+lowestC]) customShape[i][j] = new Boolean(true);  //if the on the screen is true, then make the position RELATIVE TO THE TOP LEFT of the shape array true as well
-      else customShape[i][j] = new Boolean(false); //otherwise, make it false
+    if(buffer[i+r+lowestR][j+c+lowestC]) {
+      customShape[i][j] = new Boolean(true);  //if the on the screen is true, then make the position RELATIVE TO THE TOP LEFT of the shape array true as well
+      println(i+","+j+" is true (copy)");
+    }
+    else {
+      customShape[i][j] = new Boolean(false); //otherwise, make it false
+      println(i+","+j+" is false (copy)");
+    }
   }}
 }
 public void pasteShape(int r, int c) {
   if(r+lowestR>=0&&c+lowestC>=0&&r+highestR<NUM_ROWS&&c+highestC<NUM_COLS) {//check that it's not out of bounds
     resetCounters();//reset counters (doing it here so that it doesnt reset them if it's not out of bouds
     for (int i = 0; i<=highestR-lowestR; i++) { for (int j = 0; j<=highestC-lowestC; j++) { //set buffer positions to true
-      if(customShape[i][j]) buffer[i+r+lowestR][j+c+lowestC]=true;
+      if(customShape[i][j]) {
+        buffer[i+r+lowestR][j+c+lowestC]=true;
+        println(i+","+j+" is true (paste)");
+      }
     }}
   }
 }
