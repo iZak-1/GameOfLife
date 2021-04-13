@@ -124,7 +124,6 @@ public void keyPressed() {
     running = !running;
   }
   else if ((keyCode == 220||keyCode == 8)&&!running) {//backslash to clear (when not running)- backspace in processing
-    println("\n\n\n\n");
     resetCounters();
     //setup();
     for (int i = 0; i<NUM_ROWS; i++) {
@@ -302,10 +301,8 @@ public void pasteShape(int r, int c) {
   if(r+lowestR>=0&&c+lowestC>=0&&r+highestR<NUM_ROWS&&c+highestC<NUM_COLS) {//check that it's not out of bounds
     resetCounters();//reset counters (doing it here so that it doesnt reset them if it's not out of bouds
     for (int i = 0; i<=highestR-lowestR; i++) { for (int j = 0; j<=highestC-lowestC; j++) { //set buffer positions to true
-      if(customShape[i][j]==true) {
-        buffer[i+r+lowestR][j+c+lowestC]=true;
-        println(i+","+j+" is true (paste)");
-      } else println(i+","+j+" is false (paste)");
+      if(customShape[i][j]==true) buffer[i+r+lowestR][j+c+lowestC]=true;
+      else {}
     }}
   }
 }
