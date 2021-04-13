@@ -295,8 +295,7 @@ public void copyShape(int r, int c) {
   customShape = new boolean[1+highestR-lowestR][1+highestC-lowestC];    //initialize the custom shape variable
   for (int i = 0; i<=highestR-lowestR; i++) { for (int j = 0; j<=highestC-lowestC; j++) { //cycle through the bounds of the customshape 
     if(buffer[i+r+lowestR][j+c+lowestC]) customShape[i][j] = new Boolean(true);  //if the on the screen is true, then make the position RELATIVE TO THE TOP LEFT of the shape array true as well
-      else customShape[i][j] = new Boolean(false); //otherwise, make it false
-    }
+    else customShape[i][j] = new Boolean(false); //otherwise, make it false
   }}
 }
 public void pasteShape(int r, int c) {
