@@ -24,7 +24,7 @@ boolean justModified; //so the program knows when to save the buffer
 
 
 public void setup () {
-  size((int)(0.975*window.innerWidth), (int)(0.975*window.innerHeight));
+  size((int)(0.9*window.innerWidth), (int)(0.9*window.innerHeight));
   frameRate(framerate);
   CELL_SIZE=(float)width/NUM_COLS;
   NUM_ROWS=(int)floor(height/CELL_SIZE);
@@ -294,13 +294,8 @@ public void copyShape(int r, int c) {
 
   customShape = new boolean[1+highestR-lowestR][1+highestC-lowestC];    //initialize the custom shape variable
   for (int i = 0; i<=highestR-lowestR; i++) { for (int j = 0; j<=highestC-lowestC; j++) { //cycle through the bounds of the customshape 
-    if(buffer[i+r+lowestR][j+c+lowestC]) {
-      customShape[i][j] = new Boolean(true);  //if the on the screen is true, then make the position RELATIVE TO THE TOP LEFT of the shape array true as well
-      println(i+","+j+" is true (copy)");
-    }
-    else {
-      customShape[i][j] = new Boolean(false); //otherwise, make it false
-      println(i+","+j+" is false (copy)");
+    if(buffer[i+r+lowestR][j+c+lowestC]) customShape[i][j] = new Boolean(true);  //if the on the screen is true, then make the position RELATIVE TO THE TOP LEFT of the shape array true as well
+      else customShape[i][j] = new Boolean(false); //otherwise, make it false
     }
   }}
 }
@@ -308,10 +303,10 @@ public void pasteShape(int r, int c) {
   if(r+lowestR>=0&&c+lowestC>=0&&r+highestR<NUM_ROWS&&c+highestC<NUM_COLS) {//check that it's not out of bounds
     resetCounters();//reset counters (doing it here so that it doesnt reset them if it's not out of bouds
     for (int i = 0; i<=highestR-lowestR; i++) { for (int j = 0; j<=highestC-lowestC; j++) { //set buffer positions to true
-      if(customShape[i][j]) {
+      if(customShape[i][j]==true) {
         buffer[i+r+lowestR][j+c+lowestC]=true;
         println(i+","+j+" is true (paste)");
-      }
+      } else println(i+","+j+" is false (paste)");
     }}
   }
 }
