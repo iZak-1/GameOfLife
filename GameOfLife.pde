@@ -1,7 +1,7 @@
 import de.bezier.guido.*;
 //Declare and initialize constants NUM_ROWS and NUM_COLS = 20 //
 int NUM_ROWS; //will be decided by the program in setup()
-int NUM_COLS=150;
+int NUM_COLS=20;
 float CELL_SIZE; //will be calculated in setup
 private Life[][] buttons; //2d array of Life buttons each representing one cell
 private boolean[][] buffer; //2d array of booleans to store state of buttons array
