@@ -25,7 +25,7 @@ boolean debug = false;
 
 
 public void setup () {
-  size((int)(0.9*window.innerWidth), (int)(0.9*window.innerHeight));
+  size(1000, 600); //size((int)(0.9*window.innerWidth), (int)(0.9*window.innerHeight));
   frameRate(20);
   CELL_SIZE=(float)width/NUM_COLS;
   NUM_ROWS=(int)floor(height/CELL_SIZE);
@@ -96,6 +96,7 @@ public void draw () {
 }
 public void keyPressed() {
   frameRate(20);
+  /**
   if (keyCode == 68) {
     debug = !debug;
   } //'d' to toggle debug
@@ -105,7 +106,8 @@ public void keyPressed() {
     println("isStable: "+isStable+"\nisDead: "+isDead);
     println("nextFrame: "+nextFrame);
   }
-  else if (keyCode == 32) {//spacebar to toggle running
+  **/
+  if (keyCode == 32) {//spacebar to toggle running
     if(!running&&justModified) {
       savedBuffer=new boolean[NUM_ROWS][NUM_COLS];
       copyToBuffer(savedBuffer);
