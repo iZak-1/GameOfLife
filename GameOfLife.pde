@@ -75,6 +75,7 @@ public void draw () {
     }
   }
   copyFromButtonsToBuffer();
+  drawText();
   if(running&&genCount>0) {
     int isEnd = isEnd();
     if(isEnd == 1) {
@@ -88,7 +89,7 @@ public void draw () {
       frameRate(20);
     }
   }
-  drawText();          
+  //drawText();
   if (nextFrame) { //if we're just going one frame, stop the loop
     nextFrame = false;
     running = false;
@@ -96,7 +97,7 @@ public void draw () {
 }
 public void keyPressed() {
   frameRate(20);
-  /**
+  
   if (keyCode == 68) {
     debug = !debug;
   } //'d' to toggle debug
@@ -106,7 +107,8 @@ public void keyPressed() {
     println("isStable: "+isStable+"\nisDead: "+isDead);
     println("nextFrame: "+nextFrame);
   }
-  **/
+  
+  
   if (keyCode == 32) {//spacebar to toggle running
     if(!running&&justModified) {
       savedBuffer=new boolean[NUM_ROWS][NUM_COLS];
