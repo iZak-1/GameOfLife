@@ -96,7 +96,9 @@ public void draw () {
 }
 public void keyPressed() {
   frameRate(20);
-  if (keyCode == 68) debug = !debug; //'d' to toggle debug
+  if (keyCode == 68) {
+    debug = !debug;
+  } //'d' to toggle debug
   else if(keyCode == 80) {//print stuff
     println("isEnd: "+isEnd());
     println("running: "+running);
