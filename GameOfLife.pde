@@ -75,6 +75,7 @@ public void draw () {
     }
   }
   copyFromButtonsToBuffer();
+  /**
   if(running&&genCount>0) {
     int isEnd = isEnd();
     if(isEnd == 1) {
@@ -88,6 +89,7 @@ public void draw () {
       frameRate(20);
     }
   }
+  **/
   drawText();
   if (nextFrame) { //if we're just going one frame, stop the loop
     nextFrame = false;
