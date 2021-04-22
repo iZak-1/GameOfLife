@@ -75,7 +75,6 @@ public void draw () {
     }
   }
   copyFromButtonsToBuffer();
-  drawText();
   if(running&&genCount>0) {
     int isEnd = isEnd();
     if(isEnd == 1) {
@@ -89,7 +88,7 @@ public void draw () {
       frameRate(20);
     }
   }
-  //drawText();
+  drawText();
   if (nextFrame) { //if we're just going one frame, stop the loop
     nextFrame = false;
     running = false;
@@ -246,7 +245,8 @@ public int isEnd() {
     for (int j = 0; j<NUM_COLS; j++) {
       if(buffer[i][j]){
         ended = false;
-        i = NUM_ROWS+1; j=NUM_COLS+1;  //break out of both loops
+        //i = NUM_ROWS+1; j=NUM_COLS+1;  //break out of both loops
+        break;
       }
     }
   }
@@ -256,7 +256,8 @@ public int isEnd() {
     for (int j = 0; j<NUM_COLS; j++) {
       if(oldBuffer[i][j] != buffer[i][j]){
         ended = false;
-        i = NUM_ROWS+1; j=NUM_COLS+1;  //break out of both loops
+        //i = NUM_ROWS+1; j=NUM_COLS+1;  //break out of both loops
+        break;
       }
     }
   }
