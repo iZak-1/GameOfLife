@@ -14,18 +14,19 @@ boolean[][] customShape; //user-made shape
   int highestC;
 boolean running; //used to start and stop program
 boolean nextFrame = false; //used to indicate whether we're just going forward 1 frame
-int framerate = 6; //variable, not constant
+int framerate = 10; //variable, not constant
 int genCount; //dynamically tracks generations since modification
 boolean isDead; //is everything on the board dead?
 boolean isStable; //is nothing moving?
 boolean firstRun = true; //so the program knows when to reset the saved buffer
 boolean justModified; //so the program knows when to save the buffer
+boolean debug = false;
 
 
 
 public void setup () {
   size((int)(0.9*window.innerWidth), (int)(0.9*window.innerHeight));
-  frameRate(framerate);
+  frameRate(20);
   CELL_SIZE=(float)width/NUM_COLS;
   NUM_ROWS=(int)floor(height/CELL_SIZE);
   justModified = false;
@@ -58,12 +59,12 @@ public void setup () {
 }
 
 
-
 public void draw () {
   background( 0 );
   if(running) {
     copyFromBufferToButtons();
     genCount++;
+    copyToBuffer(oldBuffer);
   }
   for (int i = 0; i<NUM_ROWS; i++) {
     for (int j = 0; j<NUM_COLS; j++) {
@@ -74,40 +75,21 @@ public void draw () {
     }
   }
   copyFromButtonsToBuffer();
-  
-  if(checkIfDead()&&genCount>0) {
-    running = false;
-    isDead = true;
+  if(running&&genCount>0) {
+    int isEnd = isEnd();
+    println(isEnd);
+    if(isEnd == 1) {
+      running = false;
+      isDead = true;
+      frameRate(20);
+    } else if (isEnd == 2) {
+      running = false;
+      isStable = true;
+      genCount--;
+      frameRate(20);
+    }
   }
-  
-  if(running&&checkIfSame()) {
-    running = false;
-    isStable = true;
-    genCount--;
-  }
-  copyToBuffer(oldBuffer);
-  
-                  //text begins here
-  fill(255);
-  textSize(floor(height/30));
-  textAlign(CENTER,BOTTOM);
-  text(framerate+"fps",floor(width/2),floor(49*height/50));
-  textAlign(RIGHT,BOTTOM);
-  text(genCount, floor(49*width/50), floor(49*height/50));
-  if(!running) {
-    textAlign(CENTER,TOP);
-    text("paused",floor(width/2),floor(height/50));
-    textAlign(LEFT,BOTTOM);
-    text(NUM_COLS+"x"+NUM_ROWS,floor(width/50),floor(49*height/50));
-  }
-  if(isStable||isDead) {
-    textAlign(CENTER,CENTER);
-    if(isStable) text("fully stable at generation "+genCount+" and onwards.\nModify the grid or press [r] to reset it to continue",floor(width/2),floor(height/2));
-    if(isDead) text("dies at generation "+genCount+".\nModify the grid or press [r] to reset it to continue",floor(width/2),floor(height/2));
-  }
-                //text ends here
-                
-                
+  drawText();          
   if (nextFrame) { //if we're just going one frame, stop the loop
     nextFrame = false;
     running = false;
@@ -115,6 +97,7 @@ public void draw () {
 }
 public void keyPressed() {
   frameRate(20);
+  if (keyCode == 68) debug = !debug; //'d' to toggle debug 
   if (keyCode == 32) {//spacebar to toggle running
     if(!running&&justModified) {
       savedBuffer=new boolean[NUM_ROWS][NUM_COLS];
@@ -246,31 +229,28 @@ public void copyToBuffer(boolean copyTo[][]) { //used for oldbuffer and saved bu
   }
 }
 
-//Functions to check for stability
-public boolean checkIfSame() {
-  boolean output = true;
-  for (int i = 0; i<NUM_ROWS; i++) {
-    for (int j = 0; j<NUM_COLS; j++) {
-      if(oldBuffer[i][j] != buffer[i][j]){
-        output = false;
-        break;
-      }
-    }
-  }
-  return output;
-}
-
-public boolean checkIfDead() {
-  boolean output = true;
+public int isEnd() {
+  boolean ended = true;
   for (int i = 0; i<NUM_ROWS; i++) {
     for (int j = 0; j<NUM_COLS; j++) {
       if(buffer[i][j]){
-        output = false;
-        break;
+        ended = false;
+        i = NUM_ROWS+1; j=NUM_COLS+1;  //break out of both loops
       }
     }
   }
-  return output;
+  if(ended) return 1; //if it didn't pass any of those "if"s, it means it's dead. So return 1, and we're done.
+  ended = true;
+  for (int i = 0; i<NUM_ROWS; i++) {
+    for (int j = 0; j<NUM_COLS; j++) {
+      if(oldBuffer[i][j] != buffer[i][j]){
+        ended = false;
+        i = NUM_ROWS+1; j=NUM_COLS+1;  //break out of both loops
+      }
+    }
+  }
+  if(ended) return 2; //if it didn't pass those, it's stable. So return 2
+  return 0;
 }
 
 
@@ -278,11 +258,11 @@ public void resetCounters() {
   genCount = 0;
   isDead = isStable = running = false;
   justModified = true;
+  frameRate(20);
 }
 
 //used to copy-paste user-generated shape
 public void copyShape(int r, int c) {
-  copyFromButtonsToBuffer();
   highestC=lowestC=c; //set the bounds to be the selected cell
   highestR=lowestR=r;
   for (int i = 0; i<NUM_ROWS; i++) { for (int j = 0; j<NUM_COLS; j++) { //find lowest and highest column and row values
@@ -329,6 +309,26 @@ public int countNeighbors(int row, int col) {
   return neighbors;
 }
 
+
+
+public void drawText() {
+  fill(255);
+  textSize(floor(height/30));
+  textAlign(CENTER,BOTTOM);
+  text(framerate+(debug? " ("+round(frameRate)+") " : " ")+"fps",floor(width/2),floor(49*height/50));
+  textAlign(RIGHT,BOTTOM);
+  text(genCount, floor(49*width/50), floor(49*height/50));
+  if(!running) {
+    textAlign(CENTER,TOP);
+    text("paused",floor(width/2),floor(height/50));
+    textAlign(LEFT,BOTTOM);
+    text(NUM_COLS+"x"+NUM_ROWS,floor(width/50),floor(49*height/50));
+  }
+  if(isStable||isDead) {
+    textAlign(CENTER,CENTER);
+    text((isStable ? "fully stabilizes at generation " : "dies at generation ") +genCount+".\nModify the grid or press [r] to reset it to continue",floor(width/2),floor(height/2));
+  }
+}
 
 
 
@@ -381,28 +381,3 @@ public class Life {
     alive = living;
   }
 }
-
-
-
-
-
-
-
-
-
-//NOT USED ANYMORE
-/**
-public void printBuffer(int r, int c) { //for finding what cells need to be true to make a shape. Not needed in the final program, but I'm keeping it here nonetheless.
-  copyFromButtonsToBuffer();
-  println("\n\n\n\n");
-  for (int i = 0; i<NUM_ROWS; i++) {
-    for (int j = 0; j<NUM_COLS; j++) {
-      if(buffer[i][j]) {
-        print("buffer[r+"+(i-r)+"][c+"+(j-c)+"]=");
-      }
-    }
-  }
-}
-public void makeMedWeightShip(int r, int c) {  buffer[r-1][c+1]=buffer[r-1][c+2]=buffer[r-1][c+3]=buffer[r-1][c+4]=buffer[r-1][c+5]=buffer[r][c]=buffer[r][c+5]=buffer[r+1][c+5]=buffer[r+2][c]=buffer[r+2][c+4]=buffer[r+3][c+2]=true;  }
-public void makeHeavyWeightShip(int r, int c) {  buffer[r-1][c+1]=buffer[r-1][c+2]=buffer[r-1][c+3]=buffer[r-1][c+4]=buffer[r-1][c+5]=buffer[r-1][c+6]=buffer[r][c]=buffer[r][c+6]=buffer[r+1][c+6]=buffer[r+2][c]=buffer[r+2][c+5]=buffer[r+3][c+2]=buffer[r+3][c+3]=true;  }
-**/
