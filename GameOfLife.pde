@@ -26,7 +26,7 @@ boolean previousState = false;
 
 
 public void setup () {
-  size(1000, 600); //size((int)(0.9*window.innerWidth), (int)(0.9*window.innerHeight));
+  size((int)(0.9*window.innerWidth), (int)(0.9*window.innerHeight));
   frameRate(20);
   CELL_SIZE=(float)width/NUM_COLS;
   NUM_ROWS=(int)floor(height/CELL_SIZE);
