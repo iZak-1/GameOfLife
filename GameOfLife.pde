@@ -20,6 +20,7 @@ boolean isDead; //is everything on the board dead?
 boolean isStable; //is nothing moving?
 boolean justModified; //so the program knows when to save the buffer
 boolean debug = false;
+boolean override = false;
 
 
 
@@ -72,11 +73,12 @@ public void draw () {
   }
   copyFromButtonsToBuffer();
   
-  if(running&&genCount>0) {
+  if(running&&genCount>0&&!override) {
     if(checkIfDead()) {
       running = false;
       isDead = true;
       frameRate(20);
+      if(genCount==1&&checkIfSame()) genCount--;
     } else if (checkIfSame()) {
       running = false;
       isStable = true;
@@ -106,6 +108,9 @@ public void keyPressed() {
       savedBuffer=new boolean[NUM_ROWS][NUM_COLS];
       copyToBuffer(savedBuffer);
       justModified = false;
+    }
+    if((isDead||isStable)&&!running) {
+      override = true;
     }
     running = !running;
   }
@@ -257,7 +262,7 @@ public boolean checkIfDead() {
 
 public void resetCounters() {
   genCount = 0;
-  isDead = isStable = running = false;
+  isDead = isStable = running = override = false;
   justModified = true;
   frameRate(20);
 }
@@ -325,9 +330,9 @@ public void drawText() {
     textAlign(LEFT,BOTTOM);
     text(NUM_COLS+"x"+NUM_ROWS,floor(width/50),floor(49*height/50));
   }
-  if(isStable||isDead) {
+  if((isStable||isDead)&&!override) {
     textAlign(CENTER,CENTER);
-    text((isStable ? "fully stabilizes at generation " : "dies at generation ") +genCount+".\nModify the grid or press [r] to reset it to continue",floor(width/2),floor(height/2));
+    text((isStable ? "fully stabilizes at generation " : "dies at generation ") +genCount+".\nTo continue, either press [r] to revert to generation 0, modify the grid, or unpause",floor(width/2),floor(height/2));
   }
 }
 
