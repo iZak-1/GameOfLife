@@ -21,6 +21,7 @@ boolean isStable; //is nothing moving?
 boolean justModified; //so the program knows when to save the buffer
 boolean debug = false;
 boolean override = false;
+boolean previousState = false;
 
 
 
@@ -59,6 +60,9 @@ public void setup () {
 public void draw () {
   background( 0 );
   if(running) {
+    isDead = true;        //assume it's dead and stable, then if proven it's not change to not dead or not stable
+    isStable = true;
+    
     copyFromBufferToButtons();
     genCount++;
     copyToBuffer(oldBuffer);
@@ -66,26 +70,33 @@ public void draw () {
   for (int i = 0; i<NUM_ROWS; i++) {
     for (int j = 0; j<NUM_COLS; j++) {
       if (running) {
+        previousState= new Boolean(buttons[i][j].getLife()); //saves the state of the cells (to check for stability)
         buttons[i][j].setLife(countNeighbors(i, j)==3||(countNeighbors(i, j)==2&&buttons[i][j].getLife()));
+        if(isDead&&buttons[i][j].getLife()) {isDead=false;}    //if any evidence is found that it's not dead, set isDead to false
+        if(isStable&&Boolean.compare(previousState,buttons[i][j].getLife())!=0) {isStable=false;}    //if there's a changed cell, set isStable to false
       }
       buttons[i][j].show();
     }
   }
   copyFromButtonsToBuffer();
   
-  if(running&&genCount>0&&!override) {
-    if(checkIfDead()) {
+  /**if(running&&genCount>0&&!override) {
+    if(isDead) {
       running = false;
-      isDead = true;
       frameRate(20);
-      if(genCount==1&&checkIfSame()) genCount--;
-    } else if (checkIfSame()) {
+      if(genCount==1&&isStable) genCount--;
+    } else if (isStable) {
       running = false;
-      isStable = true;
       genCount--;
       frameRate(20);
     }
+  }**/
+  if(running&&genCount>0&&!override&&(isDead||isStable)) {
+    running = false;
+    frameRate(20);
+    if(isStable) genCount--;
   }
+  
   drawText();
   if (nextFrame) { //if we're just going one frame, stop the loop
     nextFrame = false;
@@ -234,32 +245,6 @@ public void copyToBuffer(boolean copyTo[][]) { //used for oldbuffer and saved bu
   }
 }
 
-
-public boolean checkIfSame() {
-  boolean output = true;
-  for (int i = 0; i<NUM_ROWS; i++) {
-    for (int j = 0; j<NUM_COLS; j++) {
-      if(oldBuffer[i][j] != buffer[i][j]){
-        output = false;
-        break;
-      }
-    }
-  }
-  return output;
-}
-public boolean checkIfDead() {
-  boolean output = true;
-  for (int i = 0; i<NUM_ROWS; i++) {
-    for (int j = 0; j<NUM_COLS; j++) {
-      if(buffer[i][j]){
-        output = false;
-        break;
-      }
-    }
-  }
-  return output;
-}
-
 public void resetCounters() {
   genCount = 0;
   isDead = isStable = running = override = false;
@@ -332,7 +317,7 @@ public void drawText() {
   }
   if((isStable||isDead)&&!override) {
     textAlign(CENTER,CENTER);
-    text((isStable ? "fully stabilizes at generation " : "dies at generation ") +genCount+".\nTo continue, either press [r] to revert to generation 0, modify the grid, or unpause",floor(width/2),floor(height/2));
+    text((isDead ? "dies at generation " : "fully stabilizes at generation ") +genCount+".\nTo continue, either press [r] to revert to generation 0, modify the grid, or unpause",floor(width/2),floor(height/2));
   }
 }
 
