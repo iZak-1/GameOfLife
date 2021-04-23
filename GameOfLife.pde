@@ -5,7 +5,6 @@ int NUM_COLS=20;
 float CELL_SIZE; //will be calculated in setup
 private Life[][] buttons; //2d array of Life buttons each representing one cell
 private boolean[][] buffer; //2d array of booleans to store state of buttons array
-boolean[][] oldBuffer; //used to see if the state is stable
 boolean[][] savedBuffer; //used to save the state of the game at last modification
 boolean[][] customShape; //user-made shape
   int lowestR;
@@ -49,11 +48,9 @@ public void setup () {
   }
 
   savedBuffer=new boolean[NUM_ROWS][NUM_COLS];
-  copyToBuffer(savedBuffer);
+  saveBuffer();
   
   resetCounters();
-  oldBuffer=new boolean[NUM_ROWS][NUM_COLS];
-  copyToBuffer(oldBuffer);
 }
 
 
@@ -64,12 +61,11 @@ public void draw () {
     
     copyFromBufferToButtons();
     genCount++;
-    copyToBuffer(oldBuffer);
   }
   for (int i = 0; i<NUM_ROWS; i++) {
     for (int j = 0; j<NUM_COLS; j++) {
       if (running) {
-        previousState=!!buttons[i][j].getLife(); //saves the state of the cells (to check for stability)
+        previousState=buttons[i][j].getLife(); //saves the state of the cells (to check for stability)
         buttons[i][j].setLife(countNeighbors(i, j)==3||(countNeighbors(i, j)==2&&buttons[i][j].getLife()));
         if(isDead&&buttons[i][j].getLife()) {isDead=false;}    //if any evidence is found that it's not dead, set isDead to false
         if(isStable&&previousState!=buttons[i][j].getLife()) {isStable=false;}    //if there's a changed cell, set isStable to false
@@ -105,7 +101,7 @@ public void keyPressed() {
   if (keyCode == 32) {//spacebar to toggle running
     if(!running&&justModified) {
       savedBuffer=new boolean[NUM_ROWS][NUM_COLS];
-      copyToBuffer(savedBuffer);
+      saveBuffer();
       justModified = false;
     }
     if((isDead||isStable)&&!running) {
@@ -133,7 +129,7 @@ public void keyPressed() {
   else if (key == ENTER&&!running&&!nextFrame) {//forward one frame when you hit enter (when notrunning)
     if(justModified) {
       savedBuffer=new boolean[NUM_ROWS][NUM_COLS];
-      copyToBuffer(savedBuffer);
+      saveBuffer();
       justModified = false;
     }
     running = nextFrame =true;
@@ -225,10 +221,10 @@ public void copyFromButtonsToBuffer() {
     }
   }
 }
-public void copyToBuffer(boolean copyTo[][]) { //used for oldbuffer and saved buffer, figured better to use one function than two
+public void saveBuffer() { //copy to saved buffer
   for (int i = 0; i<NUM_ROWS; i++) {
     for (int j = 0; j<NUM_COLS; j++) {
-      copyTo[i][j] = buffer[i][j];
+      savedBuffer[i][j] = buffer[i][j];
     }
   }
 }
