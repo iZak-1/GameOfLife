@@ -305,7 +305,7 @@ public void drawText() {
   }
   if((isStable||isDead)&&!override) {
     textAlign(CENTER,CENTER);
-    text((isDead ? "dies at generation " : "fully stabilizes at generation ") +genCount+".\nTo continue, either press [r] to revert to generation 0, modify the grid, or unpause",floor(width/2),floor(height/2));
+    text((isDead ? "dies at generation " : "fully stabilizes at generation ") +genCount+"\nTo continue, either press [r] to revert to generation 0, modify the grid, or unpause",floor(width/2),floor(height/2));
   }
 }
 
