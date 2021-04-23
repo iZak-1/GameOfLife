@@ -60,8 +60,8 @@ public void setup () {
 public void draw () {
   background( 0 );
   if(running) {
-    //isDead = isStable = true;        //assume it's dead and stable, then if proven it's not change to not dead or not stable
-    
+    isDead = true;        //assume it's dead and stable, then if proven it's not change to not dead or not stable
+    isStable = false; //true
     copyFromBufferToButtons();
     genCount++;
     copyToBuffer(oldBuffer);
@@ -72,7 +72,7 @@ public void draw () {
         previousState=!!buttons[i][j].getLife(); //saves the state of the cells (to check for stability)
         buttons[i][j].setLife(countNeighbors(i, j)==3||(countNeighbors(i, j)==2&&buttons[i][j].getLife()));
         if(isDead&&buttons[i][j].getLife()) {isDead=false;}    //if any evidence is found that it's not dead, set isDead to false
-        if(isStable&&Boolean.compare(previousState,buttons[i][j].getLife())!=0) {isStable=false;}    //if there's a changed cell, set isStable to false
+        //if(isStable&&Boolean.compare(previousState,buttons[i][j].getLife())!=0) {isStable=false;}    //if there's a changed cell, set isStable to false
       }
       buttons[i][j].show();
     }
