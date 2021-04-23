@@ -92,4 +92,6 @@ v1.12.1: I think I tracked the issue to a syntax problem in the keypressed funct
 v1.12.2: Didn't work, testing another solution.
 v1.12.3: see: 1.12.2
 v1.12.4: tracked it down to isEnd() function. Hypothesis is that the issue is connected to my method of breaking out of a 2d array.
+v1.12.5: confirmed that the suspected problem is indeed the problem. Attempting repairs.
+v1.12.6: fixed the problem. I was attempting to use an optimized function that combines the stability-checking function with the dead-checking function. Realized that a) it's more trouble than it's worth and b) it doesn't actually have any benifit.
 -->
