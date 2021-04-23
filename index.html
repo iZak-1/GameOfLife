@@ -32,7 +32,7 @@
 				<li>Backslash [\]: Clear the grid. Only works when paused</li>
 				<li>Tilde [~] (but without the shift, so actually a backquote `): Randomize the state of the grid. Only works when paused.</li>
 				<li>Enter: Move forward one generation (one frame). Only works when paused</li>
-				<li>Press [r] to reset the board to generation 0. Only works when paused</li>
+				<li>Press [r] to revert to generation 0. Only works when paused</li>
 				<li>If you make a shape you want to play around with, you can save it and load it in whenever you'd like! Hover your mouse over any cell, and press [c] (copy) to copy all active cells. Hitting [p] (paste) will paste the shape, preserving the relative position to the mouse. Only works when paused.</li>
 				</ul>
 			</li>
@@ -94,4 +94,5 @@ v1.12.3: see: 1.12.2
 v1.12.4: tracked it down to isEnd() function. Hypothesis is that the issue is connected to my method of breaking out of a 2d array.
 v1.12.5: confirmed that the suspected problem is indeed the problem. Attempting repairs.
 v1.12.6: fixed the problem. I was attempting to use an optimized function that combines the stability-checking function with the dead-checking function. Realized that a) it's more trouble than it's worth and b) it doesn't actually have any benifit.
+v1.12.7: modified the death/stability screen to be more concise.
 -->
