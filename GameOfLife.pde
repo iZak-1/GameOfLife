@@ -26,7 +26,7 @@ boolean previousState = false;
 
 
 public void setup () {
-  size((int)(0.9*window.innerWidth), (int)(0.9*window.innerHeight));
+  size(1000, 600); //size((int)(0.9*window.innerWidth), (int)(0.9*window.innerHeight));
   frameRate(20);
   CELL_SIZE=(float)width/NUM_COLS;
   NUM_ROWS=(int)floor(height/CELL_SIZE);
@@ -60,8 +60,8 @@ public void setup () {
 public void draw () {
   background( 0 );
   if(running) {
-    isDead = true;        //assume it's dead and stable, then if proven it's not change to not dead or not stable
-    isStable = false; //true
+    isDead = isStable = true;        //assume it's dead and stable, then if proven it's not change to not dead or not stable
+    
     copyFromBufferToButtons();
     genCount++;
     copyToBuffer(oldBuffer);
@@ -72,24 +72,13 @@ public void draw () {
         previousState=!!buttons[i][j].getLife(); //saves the state of the cells (to check for stability)
         buttons[i][j].setLife(countNeighbors(i, j)==3||(countNeighbors(i, j)==2&&buttons[i][j].getLife()));
         if(isDead&&buttons[i][j].getLife()) {isDead=false;}    //if any evidence is found that it's not dead, set isDead to false
-        //if(isStable&&Boolean.compare(previousState,buttons[i][j].getLife())!=0) {isStable=false;}    //if there's a changed cell, set isStable to false
+        if(isStable&&previousState!=buttons[i][j].getLife()) {isStable=false;}    //if there's a changed cell, set isStable to false
       }
       buttons[i][j].show();
     }
   }
   copyFromButtonsToBuffer();
   
-  /**if(running&&genCount>0&&!override) {
-    if(isDead) {
-      running = false;
-      frameRate(20);
-      if(genCount==1&&isStable) genCount--;
-    } else if (isStable) {
-      running = false;
-      genCount--;
-      frameRate(20);
-    }
-  }**/
   if(running&&genCount>0&&!override&&(isDead||isStable)) {
     running = false;
     frameRate(20);
