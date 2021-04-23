@@ -14,18 +14,17 @@ boolean[][] customShape; //user-made shape
   int highestC;
 boolean running; //used to start and stop program
 boolean nextFrame = false; //used to indicate whether we're just going forward 1 frame
-int framerate = 10; //variable, not constant
+int framerate = 7; //variable, not constant
 int genCount; //dynamically tracks generations since modification
 boolean isDead; //is everything on the board dead?
 boolean isStable; //is nothing moving?
-boolean firstRun = true; //so the program knows when to reset the saved buffer
 boolean justModified; //so the program knows when to save the buffer
 boolean debug = false;
 
 
 
 public void setup () {
-  size(1000, 600); //size((int)(0.9*window.innerWidth), (int)(0.9*window.innerHeight));
+  size((int)(0.9*window.innerWidth), (int)(0.9*window.innerHeight));
   frameRate(20);
   CELL_SIZE=(float)width/NUM_COLS;
   NUM_ROWS=(int)floor(height/CELL_SIZE);
@@ -46,12 +45,9 @@ public void setup () {
       buffer[i][j] = new Boolean(buttons[i][j].getLife());
     }
   }
-  
-  if(firstRun) {
-    savedBuffer=new boolean[NUM_ROWS][NUM_COLS];
-    copyToBuffer(savedBuffer);
-    firstRun = false;
-  }
+
+  savedBuffer=new boolean[NUM_ROWS][NUM_COLS];
+  copyToBuffer(savedBuffer);
   
   resetCounters();
   oldBuffer=new boolean[NUM_ROWS][NUM_COLS];
@@ -75,21 +71,19 @@ public void draw () {
     }
   }
   copyFromButtonsToBuffer();
-  /**
+  
   if(running&&genCount>0) {
-    int isEnd = isEnd();
-    if(isEnd == 1) {
+    if(checkIfDead()) {
       running = false;
       isDead = true;
       frameRate(20);
-    } else if (isEnd == 2) {
+    } else if (checkIfSame()) {
       running = false;
       isStable = true;
       genCount--;
       frameRate(20);
     }
   }
-  **/
   drawText();
   if (nextFrame) { //if we're just going one frame, stop the loop
     nextFrame = false;
@@ -103,10 +97,7 @@ public void keyPressed() {
     debug = !debug;
   } //'d' to toggle debug
   else if(keyCode == 80) {//print stuff
-    println("isEnd: "+isEnd());
-    println("running: "+running);
-    println("isStable: "+isStable+"\nisDead: "+isDead);
-    println("nextFrame: "+nextFrame);
+    
   }
   
   
@@ -120,7 +111,6 @@ public void keyPressed() {
   }
   else if ((keyCode == 220||keyCode == 8)&&!running) {//backslash to clear (when not running)- backspace in processing
     resetCounters();
-    //setup();
     for (int i = 0; i<NUM_ROWS; i++) {
       for (int j = 0; j<NUM_COLS; j++) {
         buttons[i][j].setLife(false);
@@ -147,11 +137,9 @@ public void keyPressed() {
   //change dimensions
   else if (keyCode==38&&!running&&!nextFrame) { //up key increases number of rows and cols
     NUM_COLS++;
-    firstRun = true;
     setup();
   } else if (keyCode==40&&NUM_COLS>5&&NUM_ROWS>5&&!running&&!nextFrame) { //down key decreases number of rows and cols (minimum 5x5)
     NUM_COLS--;
-    firstRun = true;
     setup();
   }
   
@@ -241,32 +229,31 @@ public void copyToBuffer(boolean copyTo[][]) { //used for oldbuffer and saved bu
   }
 }
 
-public int isEnd() {
-  boolean ended = true;
-  for (int i = 0; i<NUM_ROWS; i++) {
-    for (int j = 0; j<NUM_COLS; j++) {
-      if(buffer[i][j]){
-        ended = false;
-        //i = NUM_ROWS+1; j=NUM_COLS+1;  //break out of both loops
-        break;
-      }
-    }
-  }
-  if(ended) return 1; //if it didn't pass any of those "if"s, it means it's dead. So return 1, and we're done.
-  ended = true;
+
+public boolean checkIfSame() {
+  boolean output = true;
   for (int i = 0; i<NUM_ROWS; i++) {
     for (int j = 0; j<NUM_COLS; j++) {
       if(oldBuffer[i][j] != buffer[i][j]){
-        ended = false;
-        //i = NUM_ROWS+1; j=NUM_COLS+1;  //break out of both loops
+        output = false;
         break;
       }
     }
   }
-  if(ended) return 2; //if it didn't pass those, it's stable. So return 2
-  return 0;
+  return output;
 }
-
+public boolean checkIfDead() {
+  boolean output = true;
+  for (int i = 0; i<NUM_ROWS; i++) {
+    for (int j = 0; j<NUM_COLS; j++) {
+      if(buffer[i][j]){
+        output = false;
+        break;
+      }
+    }
+  }
+  return output;
+}
 
 public void resetCounters() {
   genCount = 0;
