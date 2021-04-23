@@ -29,10 +29,11 @@
 				<li>Spacebar: pause/unpase</li>
 				<li>Up and down arrows: Change grid size (up=increase size, down=decrease). Only works when paused.</li>
 				<li>Left and right arrows: Change framerate (right=higher, left=lower).</li>
-				<li>Backslash [\]: Clear the grid. Only works when paused</li>
+				<li>Backslash [\]: Clear the grid. Only works when paused.</li>
 				<li>Tilde [~] (but without the shift, so actually a backquote `): Randomize the state of the grid. Only works when paused.</li>
-				<li>Enter: Move forward one generation (one frame). Only works when paused</li>
-				<li>Press [r] to revert to generation 0. Only works when paused</li>
+				<li>Enter: Move forward one generation (one frame). Only works when paused.</li>
+				<li>Press [r] to revert to generation 0. Only works when paused.</li>
+				<li>Performance debug: press [d] to toggle debug mode, in which you can also see the actual framerate, in addition to the already-displayed target framerate.</li>
 				<li>If you make a shape you want to play around with, you can save it and load it in whenever you'd like! Hover your mouse over any cell, and press [c] (copy) to copy all active cells. Hitting [p] (paste) will paste the shape, preserving the relative position to the mouse. Only works when paused.</li>
 				</ul>
 			</li>
@@ -50,7 +51,7 @@
 				<li>[0] creates something known as a 'gun', which shoots out other shapes. This gun is called a Gosper gun (named for the discoverer), and shoots gliders to the southeast. It takes up a large 36x9 space, but needs more space for the gliders to actually survive long enough to be recognizable as gliders.</li>	    
 				<li>Do you want to be able to import another shape? That's what the copy-paste function is for!</li>
 				</ul>
-			<li>There are many more interesting shapes listed on the <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life#Examples_of_patterns">wikipedia page</a> for the game of life, as well as on the online game of life's <a href="https://playgameoflife.com/lexicon">lexicon page</a></li>
+			<li>There are many more interesting shapes listed on the <a href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life#Examples_of_patterns">wikipedia page</a> for the game of life, as well as on the online game of life's <a href="https://playgameoflife.com/lexicon">lexicon page</a>.</li>
 		</ul>
 	    <footer>
 	    </footer>
@@ -95,4 +96,5 @@ v1.12.4: tracked it down to isEnd() function. Hypothesis is that the issue is co
 v1.12.5: confirmed that the suspected problem is indeed the problem. Attempting repairs.
 v1.12.6: fixed the problem. I was attempting to use an optimized function that combines the stability-checking function with the dead-checking function. Realized that a) it's more trouble than it's worth and b) it doesn't actually have any benifit.
 v1.12.7: modified the death/stability screen to be more concise.
+v1.12.8: added debug to instructions, fixed inconsitency in punctuation
 -->
