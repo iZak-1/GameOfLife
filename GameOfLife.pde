@@ -124,7 +124,6 @@ public void keyPressed() {
         buffer[i][j] = Math.random()<0.5;
       }
     }
-    //copyFromBufferToButtons(); //not needed- does this every frame
   }
   else if (key == ENTER&&!running&&!nextFrame) {//forward one frame when you hit enter (when notrunning)
     if(justModified) {
@@ -344,6 +343,7 @@ public class Life {
   public void mousePressed () {
     alive = !alive; //turn cell on and off with mouse press
     resetCounters();
+    copyFromButtonsToBuffer();
   }
   public void show () {
     fill(alive ? 200 : 100);
