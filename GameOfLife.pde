@@ -343,7 +343,7 @@ public class Life {
   public void mousePressed () {
     alive = !alive; //turn cell on and off with mouse press
     resetCounters();
-    copyFromButtonsToBuffer();
+    buffer[myRow][myCol]=alive;
   }
   public void show () {
     fill(alive ? 200 : 100);
