@@ -124,6 +124,7 @@ public void keyPressed() {
         buffer[i][j] = Math.random()<0.5;
       }
     }
+    copyFromBufferToButtons();
   }
   else if (key == ENTER&&!running&&!nextFrame) {//forward one frame when you hit enter (when notrunning)
     if(justModified) {
